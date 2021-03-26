@@ -73,6 +73,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:id="@+id/circle_container"
+
                     app:cardCornerRadius="30dp"
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="#30313435">
