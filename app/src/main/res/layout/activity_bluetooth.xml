@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp">
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/back_button"
+            android:background="?android:selectableItemBackground"
+            android:foreground="?android:selectableItemBackground"
+            android:clickable="true"
+            app:cardCornerRadius="30dp"
+            android:layout_gravity="center_vertical"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@android:color/transparent">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_long_arrow_left"
+                android:tint="#a1a4a5" />
+        </androidx.cardview.widget.CardView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:textSize="24sp"
+            android:fontFamily="@font/roboto_black"
+            android:layout_gravity="center_vertical"
+            android:textColor="#313435"
+            android:text="Выберите устройство"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:id="@+id/load_data_block"
+        android:layout_marginBottom="16dp">
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:id="@+id/load_image"
+            android:src="@drawable/ic_circle_notch"
+            android:tint="#c7c8c9"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/lv_bt_device"
+        android:layout_width="match_parent"
+        android:divider="@null"
+        android:layout_height="match_parent"></ListView>
+</LinearLayout>
