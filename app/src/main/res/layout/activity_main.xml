@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    android:background="#ffffff"
+    android:background="#f9fbfc"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -28,18 +28,16 @@
 
     <!-- Bottom Navigation View -->
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
-        android:background="#fff"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:labelVisibilityMode="unlabeled"
-        app:itemIconTint="@drawable/selector_bottombar"
-        app:menu="@menu/navigation" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+<com.ismaeldivita.chipnavigation.ChipNavigationBar
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:paddingBottom="16px"
+    android:paddingTop="16px"
+    android:background="#f6f8fa"
+    app:cnb_menuResource="@menu/navigation"
+    android:id="@+id/chipNavigation"
+    ></com.ismaeldivita.chipnavigation.ChipNavigationBar>
+
+</RelativeLayout>

@@ -1,4 +1,4 @@
-package com.example.ufanet;
+package com.example.ufanet.profile;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.ufanet.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 
@@ -23,7 +24,6 @@ public class profileFragments extends BottomSheetDialogFragment {
 
     public profileFragments(AppCompatActivity appCompatActivity){
         this.appCompatActivity = appCompatActivity;
-
     }
 
     @Override
@@ -43,12 +43,8 @@ public class profileFragments extends BottomSheetDialogFragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_profile, container,
                 false);
-        TextView vvv = view.findViewById(R.id.name_item);
-
         return view;
-
     }
 }

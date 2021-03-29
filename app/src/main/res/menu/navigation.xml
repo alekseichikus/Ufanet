@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_home_s"
-        android:title="TODO"/>
+        android:icon="@drawable/ic_home_r"
+        android:title="Главная"
+        app:cnb_iconColor="#744fc0"/>
 
     <item
         android:id="@+id/navigation_note"
-        android:icon="@drawable/ic_user_alt_s"
-        android:title="TODO"/>
-
+        android:icon="@drawable/ic_user_alt"
+        app:cnb_iconColor="#2196f1"
+        android:title="Профиль"/>
 </menu>

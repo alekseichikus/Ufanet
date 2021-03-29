@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Ufanet</string>
+    <string name="try_again_passcode">Попробуйте еще раз</string>
+    <string name="open_door_beacon">Открываю дверь...</string>
+    <string name="share_key">Привет! Хочу чтобы вы добавили мой ключик! Сам ключ:</string>
+    <string name="share_key_title">Поделиться ключом для пропуска</string>
 </resources>

@@ -1,4 +1,4 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_checked="true" android:color="#333333" />
-    <item android:color="#a1a4a5"  />
+    <item android:state_checked="true" android:color="#5b87f4" />
+    <item android:color="#c4d5fe"  />
 </selector>

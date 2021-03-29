@@ -10,35 +10,40 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="16dp"
         android:paddingLeft="16dp"
-        android:background="#fff"
         android:paddingRight="8dp">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingRight="8dp"
             android:textSize="24sp"
+            android:gravity="center_vertical"
             android:fontFamily="@font/roboto_black"
             android:layout_centerVertical="true"
             android:textColor="#313435"
             android:text="Уфанет"/>
+
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:background="@null"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:cardCornerRadius="25dp"
+            android:layout_gravity="center"
             android:layout_centerVertical="true"
-            card_view:cardElevation="0dp"
-            android:src="@drawable/ic_bell"
-            card_view:cardCornerRadius="20dp">
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            android:id="@+id/share_button"
+            app:cardElevation="0dp"
+            android:foreground="?android:selectableItemBackground"
+            app:cardBackgroundColor="@android:color/transparent">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_margin="15dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_bell"
-                android:tint="#606060"/>
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:src="@drawable/ic_share_alt_r"
+                android:tint="#616465"
+                android:layout_gravity="center"/>
         </androidx.cardview.widget.CardView>
+
     </RelativeLayout>
 
     <LinearLayout
@@ -51,14 +56,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             card_view:cardCornerRadius="16dp"
-            card_view:cardElevation="5dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:id="@+id/add_button"
+            app:cardElevation="4dp"
+            android:elevation="10dp"
             app:cardBackgroundColor="#ccca91"
             android:layout_marginRight="16dp"
-            android:outlineAmbientShadowColor="#acaa71"
-            android:outlineSpotShadowColor="#acaa71"
+            android:outlineAmbientShadowColor="#ffaa71"
+            android:outlineSpotShadowColor="#ffaa71"
             android:layout_weight="1">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -70,119 +76,30 @@
                 android:foreground="?android:selectableItemBackground"
                 android:orientation="vertical">
                 <androidx.cardview.widget.CardView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:id="@+id/circle_container"
-
-                    app:cardCornerRadius="30dp"
+                    app:cardCornerRadius="50dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="#30313435">
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                    app:cardBackgroundColor="#16313435">
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        app:cardCornerRadius="30dp"
                         android:layout_gravity="center"
-                        android:id="@+id/circle_imageview"
-                        android:src="@drawable/ic_lock_alt_r"
-                        android:alpha="0.8"
-                        android:tint="#fff"/>
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="#30313435">
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="center"
+                            android:id="@+id/circle_imageview"
+                            android:src="@drawable/ic_lock_alt_r"
+                            android:alpha="0.8"
+                            android:tint="#fff"/>
+                    </androidx.cardview.widget.CardView>
                 </androidx.cardview.widget.CardView>
-
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
-
-
     </LinearLayout>
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        card_view:cardCornerRadius="8dp"
-        card_view:cardElevation="10dp"
-        android:outlineSpotShadowColor="#616465"
-        android:outlineAmbientShadowColor="#616465">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <LinearLayout
-                android:id="@+id/change_user_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:elevation="2dp"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical">
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        app:cardCornerRadius="25dp"
-                        android:id="@+id/image_block"
-                        android:layout_gravity="center_vertical"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#e7e8e9">
-                        <ImageView
-                            android:layout_width="17dp"
-                            android:layout_height="17dp"
-                            android:src="@drawable/ic_lock_alt_s"
-                            android:tint="#a7a8a9"
-                            android:layout_gravity="center"/>
-                    </androidx.cardview.widget.CardView>
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_toRightOf="@+id/image_block"
-                    android:layout_weight="0.4"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                            <TextView
-                                android:id="@+id/name_profile"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="14dp"
-                                android:fontFamily="@font/roboto_black"
-                                android:text="Новое устройство"
-                                android:textColor="#373839"
-                                android:textSize="16sp" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="14dp"
-                                android:fontFamily="@font/roboto_regular"
-                                android:text="Добавьте новый скуд"
-                                android:textColor="#373839"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/edit_2_button"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_angle_right"
-                    android:tint="#a7a8a9"/>
-            </LinearLayout>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
 </LinearLayout>
