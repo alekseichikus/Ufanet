@@ -25,19 +25,4 @@
         android:id="@+id/main_container">
 
     </FrameLayout>
-
-    <!-- Bottom Navigation View -->
-
-
-<com.ismaeldivita.chipnavigation.ChipNavigationBar
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:paddingBottom="16px"
-    android:paddingTop="16px"
-    android:background="#f6f8fa"
-    app:cnb_menuResource="@menu/navigation"
-    android:id="@+id/chipNavigation"
-    ></com.ismaeldivita.chipnavigation.ChipNavigationBar>
-
 </RelativeLayout>

@@ -1,23 +1,21 @@
-package com.example.ufanet.home.passwordActivity;
+package com.example.ufanet.passwordActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.ufanet.MainActivity;
 import com.example.ufanet.R;
 import com.example.ufanet.passwordView.PasscodeView;
 import com.example.ufanet.utils.MemoryOperation;
 
-
-public class RegPasscodeActivity extends AppCompatActivity {
+public class LogPasscodeActivity extends AppCompatActivity {
 
     private MemoryOperation memoryOperation;
     private PasscodeView passcodeView;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passcode);
 
@@ -25,12 +23,16 @@ public class RegPasscodeActivity extends AppCompatActivity {
 
         initUI();
         setListeners();
+
+
     }
 
     private void initUI(){
         passcodeView = (PasscodeView) findViewById(R.id.passcodeView);
+        passcodeView
+                .setPasscodeLength(4)
+                .setLocalPasscode(memoryOperation.getPasscodeUser());
     }
-
     private void setListeners(){
         passcodeView.setListener(new PasscodeView.PasscodeViewListener() {
             @Override
@@ -40,12 +42,12 @@ public class RegPasscodeActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(String number) {
-                Intent intent = new Intent(RegPasscodeActivity.this, MainActivity.class);
+                Intent intent = new Intent(LogPasscodeActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
-                memoryOperation.setPasswordUser(number);
-                onBackPressed();
+                finish();
             }
         });
     }
+
 }

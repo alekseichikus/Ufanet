@@ -1,20 +1,17 @@
 package com.example.ufanet.start;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.ufanet.home.passwordActivity.LogPasscodeActivity;
-import com.example.ufanet.home.passwordActivity.RegPasscodeActivity;
+import com.example.ufanet.passwordActivity.LogPasscodeActivity;
+import com.example.ufanet.passwordActivity.RegPasscodeActivity;
 import com.example.ufanet.utils.MemoryOperation;
 
 import java.security.SecureRandom;
 import java.util.Base64;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class StartActivity extends AppCompatActivity {
 
     private static final SecureRandom secureRandom = new SecureRandom();
@@ -32,7 +29,7 @@ public class StartActivity extends AppCompatActivity {
             memoryOperation.setTokenUser(generateNewToken());
         }
 
-        if(memoryOperation.getPasswordUser().isEmpty()){
+        if(memoryOperation.getPasscodeUser().isEmpty()){
             Intent intent = new Intent(StartActivity.this, RegPasscodeActivity.class);
             startActivity(intent);
         }

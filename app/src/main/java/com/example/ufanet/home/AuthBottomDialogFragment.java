@@ -1,40 +1,33 @@
-package com.example.ufanet.profile;
+package com.example.ufanet.home;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.ufanet.R;
+import com.example.ufanet.edit.EditActivity;
 import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
-public class profileFragments extends BottomSheetDialogFragment {
-
-    AppCompatActivity appCompatActivity;
     MemoryOperation memoryOperation;
-    RelativeLayout settingLayoutRL;
     CardView saveButtonCV;
-    EditText loginUserCV;
-    EditText passwordUserCV;
+    EditText loginUserET;
+    EditText passwordUserET;
     View view;
     public static final String APP_PREFERENCES_LOGIN_USER = "login_user";
     public static final String APP_PREFERENCES_PASSWORD_USER = "password_user";
 
-    public profileFragments(AppCompatActivity appCompatActivity){
-        this.appCompatActivity = appCompatActivity;
+    public AuthBottomDialogFragment(){
     }
 
     @Override
@@ -42,7 +35,10 @@ public class profileFragments extends BottomSheetDialogFragment {
         super.onAttach(context);
     }
 
-
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
@@ -50,18 +46,37 @@ public class profileFragments extends BottomSheetDialogFragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+        view = inflater.inflate(R.layout.dialog_fragment_auth, container,
+                false);
+
+        initUI();
+        setListeners();
+
+        memoryOperation = new MemoryOperation(getContext());
+
+        loginUserET.setText(memoryOperation.getLoginUser());
+        passwordUserET.setText(memoryOperation.getPasswordUser());
+
         return view;
     }
 
+    void initUI(){
+        saveButtonCV = view.findViewById(R.id.cv_save_button);
+        loginUserET = view.findViewById(R.id.et_login);
+        passwordUserET = view.findViewById(R.id.et_password);
+    }
     void setListeners(){
         saveButtonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isEmptyString(loginUserCV.getText().toString())){
-                    if(!isEmptyString(passwordUserCV.getText().toString())){
-                        memoryOperation.setLoginUser(loginUserCV.getText().toString());
-                        memoryOperation.setPasswordUser(passwordUserCV.getText().toString());
-                        settingLayoutRL.setVisibility(View.GONE);
+                if(!isEmptyString(loginUserET.getText().toString())){
+                    if(!isEmptyString(passwordUserET.getText().toString())){
+                        memoryOperation.setLoginUser(loginUserET.getText().toString());
+                        memoryOperation.setPasswordUser(passwordUserET.getText().toString());
+
+                        Intent intent = new Intent(getContext(), EditActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent);
                     }
                     else{
                         Toast.makeText(getContext(), "Введите пароль", Toast.LENGTH_SHORT).show();

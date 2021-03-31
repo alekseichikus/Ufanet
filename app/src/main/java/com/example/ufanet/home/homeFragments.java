@@ -26,9 +26,22 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import com.example.ufanet.Json.JsonPlaceHolderApi2;
 import com.example.ufanet.R;
 import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Calendar;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class homeFragments extends BottomSheetDialogFragment {
@@ -42,6 +55,7 @@ public class homeFragments extends BottomSheetDialogFragment {
     CardView shareCardView;
     ImageView circleImageView;
     CardView openButton;
+    CardView settingButton;
 
     Vibrator vibrator;
     MemoryOperation memoryOperation;
@@ -49,13 +63,13 @@ public class homeFragments extends BottomSheetDialogFragment {
     private BluetoothLeAdvertiser mAdvertiser;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothManager mBluetoothManager;
-    private int BEACON_BLUETOOTH_DELAY = 4000;
+    private int BEACON_BLUETOOTH_DELAY = 1000;
 
     private AdvertiseData.Builder dataBuilder;
     private AdvertiseSettings.Builder settingsBuilder;
 
     byte[] payload = {(byte)0x55,
-            (byte)0x10, (byte)0x20, (byte)0x20, (byte)0x10, (byte)0x40, (byte)0x30, (byte)0x50, (byte)0x90};
+            (byte)0x10, (byte)0x20, (byte)0x20, (byte)0x10, (byte)0x40, (byte)0x30, (byte)0x50, (byte)0x90, (byte)0x43, (byte)0x01};
 
     public homeFragments(AppCompatActivity appCompatActivity){
     }
@@ -72,12 +86,24 @@ public class homeFragments extends BottomSheetDialogFragment {
         view = inflater.inflate(R.layout.fragment_home, container,
                 false);
 
-        initUI();
-        initRunnable();
-        setListeners();
-
-        vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
         memoryOperation = new MemoryOperation(getContext());
+        vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+
+        initUI();
+        setListeners();
+        initRunnable();
+
+
+        return view;
+    }
+
+    private void initUI(){
+        addButtonContainerLayout = view.findViewById(R.id.add_button_container);
+        circleLinearLayout = view.findViewById(R.id.circle_container);
+        circleImageView = view.findViewById(R.id.circle_imageview);
+        shareCardView = view.findViewById(R.id.share_button);
+        openButton = view.findViewById(R.id.add_button);
+        settingButton = view.findViewById(R.id.cv_setting_button);
 
         dataBuilder = new AdvertiseData.Builder();
         dataBuilder.addManufacturerData(0xFFFF, payload);
@@ -93,15 +119,6 @@ public class homeFragments extends BottomSheetDialogFragment {
         mBluetoothAdapter = mBluetoothManager.getAdapter();
         mBluetoothAdapter.setName("UKEY");
         mAdvertiser = mBluetoothAdapter.getBluetoothLeAdvertiser();
-        return view;
-    }
-
-    private void initUI(){
-        addButtonContainerLayout = view.findViewById(R.id.add_button_container);
-        circleLinearLayout = view.findViewById(R.id.circle_container);
-        circleImageView = view.findViewById(R.id.circle_imageview);
-        shareCardView = view.findViewById(R.id.share_button);
-        openButton = view.findViewById(R.id.add_button);
     }
 
     private void initRunnable(){
@@ -109,6 +126,7 @@ public class homeFragments extends BottomSheetDialogFragment {
         myRunnable = new Runnable() {
             public void run() {
                 mAdvertiser.stopAdvertising(advertiseCallback);
+
                 addButtonContainerLayout.setBackgroundResource(R.drawable.transition_gradient_2);
                 AnimationDrawable animationDrawable = (AnimationDrawable) addButtonContainerLayout.getBackground();
                 animationDrawable.setEnterFadeDuration(300);
@@ -129,9 +147,9 @@ public class homeFragments extends BottomSheetDialogFragment {
         });
 
         openButton.setOnClickListener(new View.OnClickListener(){
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
+
                 mAdvertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
                 handler.postDelayed(myRunnable, BEACON_BLUETOOTH_DELAY);
                 addButtonContainerLayout.setBackgroundResource(R.drawable.transition_gradient_1);
@@ -145,6 +163,17 @@ public class homeFragments extends BottomSheetDialogFragment {
                 circleLinearLayout.requestLayout();
                 vibrator.vibrate(200);
                 Toast.makeText(getContext(), R.string.open_door_beacon, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        settingButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+                AuthBottomDialogFragment addPhotoBottomDialogFragment =
+                        new AuthBottomDialogFragment();
+                addPhotoBottomDialogFragment.show(getFragmentManager(),
+                        "day_of_week_select_fragment");
             }
         });
 

@@ -19,17 +19,15 @@ import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 public class MainActivity extends AppCompatActivity{
 
-    public SharedPreferences mSettings;
-    homeFragments fragment1 = new homeFragments(this);
-    profileFragments fragment2 = new profileFragments(this);
-    private ChipNavigationBar chipNavigationBar;
+    homeFragments homeFragments = new homeFragments(this);
+    profileFragments profileFragments = new profileFragments(this);
+    //private ChipNavigationBar chipNavigationBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        chipNavigationBar = findViewById(R.id.chipNavigation);
+        /*chipNavigationBar = findViewById(R.id.chipNavigation);
         chipNavigationBar.setItemSelected(R.id.navigation_home, true);
 
         chipNavigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
@@ -38,20 +36,17 @@ public class MainActivity extends AppCompatActivity{
                 Fragment fragment = null;
                 switch (i) {
                     case R.id.navigation_home:
-                        fragment = fragment1;
+                        fragment = homeFragments;
                         break;
                     case R.id.navigation_note:
-                        fragment = fragment2;
+                        fragment = profileFragments;
                         break;
                 }
                 loadFragment(fragment);
             }
-        });
+        });*/
 
-        loadFragment(fragment1);
-
-        mSettings = PreferenceManager.getDefaultSharedPreferences(this);
-        mSettings = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        loadFragment(homeFragments);
     }
 
     @Override

@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/navigation_note"
-        android:icon="@drawable/ic_user_alt"
+        android:icon="@drawable/ic_cogs_r"
         app:cnb_iconColor="#2196f1"
-        android:title="Профиль"/>
+        android:title="Настройки"/>
 </menu>
