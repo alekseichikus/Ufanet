@@ -191,6 +191,7 @@
                     <Switch
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/sw_wiegand"
                         android:layout_gravity="center_vertical"/>
                 </LinearLayout>
                 <LinearLayout
@@ -227,6 +228,7 @@
                     <Switch
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/sw_dallas"
                         android:layout_gravity="center_vertical"/>
                 </LinearLayout>
                 <LinearLayout
@@ -248,7 +250,7 @@
                             android:fontFamily="@font/roboto_regular"
                             android:layout_gravity="center_vertical"
                             android:textColor="#313435"
-                            android:text="Геркон"/>
+                            android:text="Gerkon"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -258,11 +260,49 @@
                             android:fontFamily="@font/roboto_regular"
                             android:layout_gravity="center_vertical"
                             android:textColor="#a1a4a5"
-                            android:text="Опрос геркон ключей"/>
+                            android:text="Опрос gerkon ключей"/>
                     </LinearLayout>
                     <Switch
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/sw_gerkon"
+                        android:layout_gravity="center_vertical"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="0.1">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingRight="8dp"
+                            android:textSize="16sp"
+                            android:gravity="center_vertical"
+                            android:fontFamily="@font/roboto_regular"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="#313435"
+                            android:text="Bluetooth"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingRight="8dp"
+                            android:textSize="16sp"
+                            android:gravity="center_vertical"
+                            android:fontFamily="@font/roboto_regular"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="#a1a4a5"
+                            android:text="Сканер Bluetooth ключей"/>
+                    </LinearLayout>
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/sw_bluetooth"
                         android:layout_gravity="center_vertical"/>
                 </LinearLayout>
                 <LinearLayout
@@ -299,6 +339,7 @@
                     <Switch
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/sw_button"
                         android:layout_gravity="center_vertical"/>
                 </LinearLayout>
                 <LinearLayout
@@ -326,6 +367,45 @@
                     <Switch
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/sw_lock"
+                        android:layout_gravity="center_vertical"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0.1">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingRight="8dp"
+                            android:textSize="16sp"
+                            android:gravity="center_vertical"
+                            android:fontFamily="@font/roboto_regular"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="#313435"
+                            android:text="Lock invert"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingRight="8dp"
+                            android:textSize="16sp"
+                            android:gravity="center_vertical"
+                            android:fontFamily="@font/roboto_regular"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="#a1a4a5"
+                            android:text="Инверсия управления замком"/>
+                    </LinearLayout>
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/sw_lock_invert"
                         android:layout_gravity="center_vertical"/>
                 </LinearLayout>
                 <LinearLayout
@@ -362,6 +442,7 @@
                     <Switch
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/sw_buzzer_case"
                         android:layout_gravity="center_vertical"/>
                 </LinearLayout>
                 <LinearLayout
@@ -398,6 +479,7 @@
                     <Switch
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/sw_buzzer_gerkon"
                         android:layout_gravity="center_vertical"/>
                 </LinearLayout>
                 <LinearLayout
@@ -434,6 +516,7 @@
                     <Switch
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/sw_buzzer_key"
                         android:layout_gravity="center_vertical"/>
                 </LinearLayout>
                 <LinearLayout
@@ -470,6 +553,7 @@
                     <Switch
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/sw_buzzer_lock"
                         android:layout_gravity="center_vertical"/>
                 </LinearLayout>
                 <TextView

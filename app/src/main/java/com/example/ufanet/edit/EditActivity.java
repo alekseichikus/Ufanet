@@ -7,56 +7,61 @@ import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
-import android.graphics.drawable.AnimationDrawable;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-
-import com.example.ufanet.Json.JsonPlaceHolderApi2;
 import com.example.ufanet.R;
-import com.example.ufanet.templates.Config;
+import com.example.ufanet.edit.presenter.EditPresenter;
+import com.example.ufanet.edit.presenter.IEditPresenter;
 import com.example.ufanet.utils.MemoryOperation;
 
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.util.Calendar;
+import static com.example.ufanet.utils.Constants.APP_PREFERENCES_PASSWORD_DEVICES;
+import static com.example.ufanet.utils.Constants.APP_PREFERENCES_SSID_DEVICES;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-
-public class EditActivity extends AppCompatActivity {
-    private static final SecureRandom secureRandom = new SecureRandom();
+public class EditActivity extends AppCompatActivity implements IEditView {
 
     MemoryOperation memoryOperation;
     EditText loginUserET;
     EditText passwordUserET;
     CardView saveButtonCV;
 
-    Handler handler;
-    Runnable myRunnable;
+    Switch bluetoothSW;
+    Switch wiegandSW;
+    Switch dallasSW;
+    Switch gerkonSW;
+    Switch buttonSW;
+    Switch lockSW;
+    Switch lockInvertSW;
+    EditText lockTimeET;
+    Switch buzzerCaseSW;
+    Switch buzzerGerkonSW;
+    Switch buzzerKeySW;
+    Switch buzzerLockSW;
 
-    private BluetoothLeAdvertiser mAdvertiser;
-    private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothManager mBluetoothManager;
+    Handler bluetoothHandler;
+    Runnable bluetoothRunnable;
+
+    private BluetoothLeAdvertiser bluetoothAdvertiser;
+    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothManager bluetoothManager;
     private int BEACON_BLUETOOTH_DELAY = 1000;
 
     private AdvertiseData.Builder dataBuilder;
     private AdvertiseSettings.Builder settingsBuilder;
 
-    byte[] payload = {(byte)0x55,
-            (byte)0x10, (byte)0x20, (byte)0x20, (byte)0x10, (byte)0x40, (byte)0x30, (byte)0x50, (byte)0x90, (byte)0x43, (byte)0x02};
+    private IEditPresenter presenter;
+
+    byte[] payload = {(byte) 0x55,
+            (byte) 0x10, (byte) 0x20, (byte) 0x20, (byte) 0x10, (byte) 0x40, (byte) 0x30, (byte) 0x50, (byte) 0x90, (byte) 0x43, (byte) 0x02};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,30 +70,71 @@ public class EditActivity extends AppCompatActivity {
         initUI();
         initRunnable();
         setListeners();
+        initBluetooth();
+
         memoryOperation = new MemoryOperation(this);
-        loginUserET.setText(memoryOperation.getLoginUser());
-        passwordUserET.setText(memoryOperation.getPasswordUser());
+        presenter = new EditPresenter(this);
 
+        setData();
 
-        Toast.makeText(EditActivity.this, "Включил маяк", Toast.LENGTH_LONG).show();
-        mAdvertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
-        handler.postDelayed(myRunnable, BEACON_BLUETOOTH_DELAY);
+        startBeacon();
+        bluetoothHandler.postDelayed(bluetoothRunnable, BEACON_BLUETOOTH_DELAY);
     }
 
-    void setListeners(){
+    void setData(){
+        loginUserET.setText(memoryOperation.getLoginUser());
+        passwordUserET.setText(memoryOperation.getPasswordUser());
+        bluetoothSW.setChecked(memoryOperation.getBluetoothSW());
+        wiegandSW.setChecked(memoryOperation.getWiegandSW());
+        dallasSW.setChecked(memoryOperation.getDallasSW());
+        gerkonSW.setChecked(memoryOperation.getGerkonSW());
+        buttonSW.setChecked(memoryOperation.getButtonSW());
+        lockSW.setChecked(memoryOperation.getLockSW());
+        lockInvertSW.setChecked(memoryOperation.getLockInvertSW());
+        //lockTimeET.setText(memoryOperation.getLockTimeConfig());
+        buzzerCaseSW.setChecked(memoryOperation.getBuzzerCaseSW());
+        buzzerGerkonSW.setChecked(memoryOperation.getBuzzerGerkonSW());
+        buzzerKeySW.setChecked(memoryOperation.getBuzzerKeySW());
+        buzzerLockSW.setChecked(memoryOperation.getBuzzerLockSW());
+    }
+
+    void startBeacon(){
+        bluetoothAdvertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
+    }
+
+    void stopBeacon(){
+        bluetoothAdvertiser.stopAdvertising(advertiseCallback);
+    }
+
+    void setListeners() {
         saveButtonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getHttpResponse();
+                getPresenter().requestEditConfig();
             }
         });
     }
 
-    void initUI(){
+    void initUI() {
         loginUserET = findViewById(R.id.et_login);
         passwordUserET = findViewById(R.id.et_password);
         saveButtonCV = findViewById(R.id.cv_save_button);
 
+        bluetoothSW = findViewById(R.id.sw_bluetooth);
+        wiegandSW = findViewById(R.id.sw_wiegand);
+        dallasSW = findViewById(R.id.sw_dallas);
+        gerkonSW = findViewById(R.id.sw_gerkon);
+        buttonSW = findViewById(R.id.sw_button);
+        lockSW = findViewById(R.id.sw_lock);
+        lockInvertSW = findViewById(R.id.sw_lock_invert);
+        lockTimeET = findViewById(R.id.et_time_open_lock);
+        buzzerCaseSW = findViewById(R.id.sw_buzzer_case);
+        buzzerGerkonSW = findViewById(R.id.sw_buzzer_gerkon);
+        buzzerKeySW = findViewById(R.id.sw_buzzer_key);
+        buzzerLockSW = findViewById(R.id.sw_buzzer_lock);
+    }
+
+    void initBluetooth(){
         dataBuilder = new AdvertiseData.Builder();
         dataBuilder.addManufacturerData(0xFFFF, payload);
         dataBuilder.setIncludeDeviceName(true);
@@ -98,22 +144,19 @@ public class EditActivity extends AppCompatActivity {
         settingsBuilder.setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
         settingsBuilder.setConnectable(false);
 
-        mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
-        mBluetoothAdapter.setName("UKEY");
-        mAdvertiser = mBluetoothAdapter.getBluetoothLeAdvertiser();
-
-
+        bluetoothAdapter = bluetoothManager.getAdapter();
+        bluetoothAdapter.setName("UKEY");
+        bluetoothAdvertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
     }
 
-    private void initRunnable(){
-        handler =  new Handler();
-        myRunnable = new Runnable() {
+    private void initRunnable() {
+        bluetoothHandler = new Handler();
+        bluetoothRunnable = new Runnable() {
             public void run() {
-                mAdvertiser.stopAdvertising(advertiseCallback);
-
-                Toast.makeText(EditActivity.this, "Отключил маяк", Toast.LENGTH_LONG).show();
+                stopBeacon();
+                connectToWifi();
             }
         };
     }
@@ -121,46 +164,124 @@ public class EditActivity extends AppCompatActivity {
     private AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
         @Override
         public void onStartFailure(int errorCode) {
-            Log.e("TAG", "Advertisement start failed with code: "+errorCode);
+            Log.e("TAG", "Advertisement start failed with code: " + errorCode);
         }
+
         @Override
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
             Log.i("TAG", "Advertisement start succeeded.");
         }
     };
 
-    public Object getHttpResponse() {
-        Retrofit retrofit1 = new Retrofit.Builder()
-                .baseUrl("http://192.168.4.1")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        JsonPlaceHolderApi2 jsonPlaceHolderApi1 = retrofit1.create(JsonPlaceHolderApi2.class);
-        Config config = new Config("SCUD", "1234567890", 1,0,
-                0,0,1, 1, 0, 3000,
-                1, 1, 1,1,"15236547893");
-        Call<Config> call1 = jsonPlaceHolderApi1.getMyJSON(config);
-        Log.d("request", call1.request().headers().toString());
-        Log.d("request body", call1.request().body().toString());
-        //call1.request().newBuilder().addHeader("Content-Length", String.valueOf(100));
-        //call1.request().newBuilder().addHeader("Content-Type", "application/json");
-        call1.enqueue(new Callback<Config>() {
-            @Override
-            public void onResponse(Call<Config> call, Response<Config> response) {
-                if (!response.isSuccessful()) {
-                    return;
-                }
-                Log.d("sukk", String.valueOf(response.code()));
-                loginUserET.setText(response.code());
-            }
-            @Override
-            public void onFailure(Call<Config> call, Throwable t) {
-                Log.d("sukk", "bfd");
-                //Log.d("sukk", t.);
-                Log.d("sukkq", call1.request().toString());
-                Log.d("dsfsdf", t.toString());
-            }
-        });
-        Log.d("sukk", "aaa");
-        return null;
+    public void connectToWifi() {
+        String networkSSID = APP_PREFERENCES_SSID_DEVICES;
+        String networkPass = APP_PREFERENCES_PASSWORD_DEVICES;
+
+        WifiConfiguration wifiConfig = new WifiConfiguration();
+        wifiConfig.SSID = String.format("\"%s\"", networkSSID);
+        wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
+
+        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+
+        int netId = wifiManager.addNetwork(wifiConfig);
+        wifiManager.disconnect();
+        wifiManager.enableNetwork(netId, true);
+        wifiManager.reconnect();
+    }
+
+
+    @Override
+    public String getLoginUser() {
+        return loginUserET.getText().toString();
+    }
+
+    @Override
+    public String getPasswordUser() {
+        return passwordUserET.getText().toString();
+    }
+
+    @Override
+    public Boolean isWiegand() {
+        return wiegandSW.isChecked();
+    }
+
+    @Override
+    public Boolean isDallas() {
+        return dallasSW.isChecked();
+    }
+
+    @Override
+    public Boolean isGerkon() {
+        return gerkonSW.isChecked();
+    }
+
+    @Override
+    public Boolean isButton() {
+        return buttonSW.isChecked();
+    }
+
+    @Override
+    public MemoryOperation getMemoryOperation() {
+        return memoryOperation;
+    }
+
+    @Override
+    public Boolean isBluetooth() {
+        return bluetoothSW.isChecked();
+    }
+
+    @Override
+    public Boolean isLock() {
+        return lockSW.isChecked();
+    }
+
+    @Override
+    public Boolean isLockInvert() {
+        return lockInvertSW.isChecked();
+    }
+
+    @Override
+    public Integer getLockTime() {
+        return Integer.valueOf(lockTimeET.getText().toString());
+    }
+
+    @Override
+    public Boolean isBuzzerCase() {
+        return buzzerCaseSW.isChecked();
+    }
+
+    @Override
+    public Boolean isBuzzerGerkon() {
+        return buzzerGerkonSW.isChecked();
+    }
+
+    @Override
+    public Boolean isBuzzerKey() {
+        return buzzerKeySW.isChecked();
+    }
+
+    @Override
+    public Boolean isBuzzerLock() {
+        return buzzerLockSW.isChecked();
+    }
+
+    @Override
+    public void onResponse(String string) {
+        Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void closeView() {
+        finish();
+    }
+
+    @Override
+    public void onResponseFailure(Throwable throwable) {
+        Toast.makeText(this, "Произошла какая-то бяка", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public IEditPresenter getPresenter() {
+        return presenter;
     }
 }

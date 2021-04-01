@@ -28,6 +28,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     public static final String APP_PREFERENCES_PASSWORD_USER = "password_user";
 
     public AuthBottomDialogFragment(){
+
     }
 
     @Override
@@ -54,9 +55,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
         memoryOperation = new MemoryOperation(getContext());
 
-        loginUserET.setText(memoryOperation.getLoginUser());
-        passwordUserET.setText(memoryOperation.getPasswordUser());
-
         return view;
     }
 
@@ -65,6 +63,14 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         loginUserET = view.findViewById(R.id.et_login);
         passwordUserET = view.findViewById(R.id.et_password);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loginUserET.setText(memoryOperation.getLoginUser());
+        passwordUserET.setText(memoryOperation.getPasswordUser());
+    }
+
     void setListeners(){
         saveButtonCV.setOnClickListener(new View.OnClickListener() {
             @Override

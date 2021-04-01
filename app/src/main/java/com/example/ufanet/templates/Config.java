@@ -17,6 +17,8 @@ public class Config {
     private Integer buzzer_key;
     private Integer buzzer_lock;
     private String time;
+    private String status;
+    private Integer code;
 
     public Config(String wlan_ssid, String wlan_pass
             , Integer bluetooth, Integer wiegand, Integer dallas
@@ -29,6 +31,8 @@ public class Config {
         this.wiegand = wiegand;
         this.dallas = dallas;
         this.gerkon = gerkon;
+        this.status = "fail";
+        this.code = 0;
         this.button = button;
         this.lock = lock;
         this.lock_invert = lock_invert;
