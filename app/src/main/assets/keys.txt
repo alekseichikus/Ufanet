@@ -1,0 +1,3 @@
+0102030405060708,"Gaisin Roman Albertovich",1
+00000000FFFEAA11,"Ivanov Ivan Ivanovich",0
+0000FFFFC021A929,"Guk Andrey Anatolievich",0

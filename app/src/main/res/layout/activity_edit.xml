@@ -18,17 +18,18 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             app:cardCornerRadius="25dp"
+            android:layout_marginLeft="16dp"
             android:layout_gravity="center"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:id="@+id/share_button"
+            android:id="@+id/cv_close_button"
             app:cardElevation="0dp"
             android:foreground="?android:selectableItemBackground"
             app:cardBackgroundColor="@android:color/transparent">
             <ImageView
                 android:layout_width="21dp"
                 android:layout_height="21dp"
-                android:src="@drawable/ic_times_r"
+                android:src="@drawable/ic_arrow_left_r"
                 android:tint="#a1a4a5"
                 android:layout_gravity="center"/>
         </androidx.cardview.widget.CardView>
@@ -37,6 +38,7 @@
             android:layout_height="wrap_content"
             android:paddingRight="8dp"
             android:textSize="24sp"
+            android:layout_marginLeft="8dp"
             android:gravity="center_vertical"
             android:fontFamily="@font/roboto_black"
             android:layout_gravity="center_vertical"

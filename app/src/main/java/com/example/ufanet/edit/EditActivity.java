@@ -33,6 +33,7 @@ public class EditActivity extends AppCompatActivity implements IEditView {
     EditText loginUserET;
     EditText passwordUserET;
     CardView saveButtonCV;
+    CardView closeButtonCV;
 
     Switch bluetoothSW;
     Switch wiegandSW;
@@ -47,38 +48,28 @@ public class EditActivity extends AppCompatActivity implements IEditView {
     Switch buzzerKeySW;
     Switch buzzerLockSW;
 
-    Handler bluetoothHandler;
-    Runnable bluetoothRunnable;
-
     private BluetoothLeAdvertiser bluetoothAdvertiser;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothManager bluetoothManager;
-    private int BEACON_BLUETOOTH_DELAY = 1000;
 
     private AdvertiseData.Builder dataBuilder;
     private AdvertiseSettings.Builder settingsBuilder;
 
     private IEditPresenter presenter;
 
-    byte[] payload = {(byte) 0x55,
-            (byte) 0x10, (byte) 0x20, (byte) 0x20, (byte) 0x10, (byte) 0x40, (byte) 0x30, (byte) 0x50, (byte) 0x90, (byte) 0x43, (byte) 0x02};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
         initUI();
-        initRunnable();
         setListeners();
-        initBluetooth();
 
         memoryOperation = new MemoryOperation(this);
         presenter = new EditPresenter(this);
 
         setData();
-
-        startBeacon();
-        bluetoothHandler.postDelayed(bluetoothRunnable, BEACON_BLUETOOTH_DELAY);
     }
 
     void setData(){
@@ -98,19 +89,18 @@ public class EditActivity extends AppCompatActivity implements IEditView {
         buzzerLockSW.setChecked(memoryOperation.getBuzzerLockSW());
     }
 
-    void startBeacon(){
-        bluetoothAdvertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
-    }
-
-    void stopBeacon(){
-        bluetoothAdvertiser.stopAdvertising(advertiseCallback);
-    }
-
     void setListeners() {
         saveButtonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getPresenter().requestEditConfig();
+            }
+        });
+
+        closeButtonCV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }
@@ -124,6 +114,7 @@ public class EditActivity extends AppCompatActivity implements IEditView {
         wiegandSW = findViewById(R.id.sw_wiegand);
         dallasSW = findViewById(R.id.sw_dallas);
         gerkonSW = findViewById(R.id.sw_gerkon);
+        closeButtonCV = findViewById(R.id.cv_close_button);
         buttonSW = findViewById(R.id.sw_button);
         lockSW = findViewById(R.id.sw_lock);
         lockInvertSW = findViewById(R.id.sw_lock_invert);
@@ -132,61 +123,6 @@ public class EditActivity extends AppCompatActivity implements IEditView {
         buzzerGerkonSW = findViewById(R.id.sw_buzzer_gerkon);
         buzzerKeySW = findViewById(R.id.sw_buzzer_key);
         buzzerLockSW = findViewById(R.id.sw_buzzer_lock);
-    }
-
-    void initBluetooth(){
-        dataBuilder = new AdvertiseData.Builder();
-        dataBuilder.addManufacturerData(0xFFFF, payload);
-        dataBuilder.setIncludeDeviceName(true);
-        settingsBuilder = new AdvertiseSettings.Builder();
-
-        settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY);
-        settingsBuilder.setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
-        settingsBuilder.setConnectable(false);
-
-        bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-
-        bluetoothAdapter = bluetoothManager.getAdapter();
-        bluetoothAdapter.setName("UKEY");
-        bluetoothAdvertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
-    }
-
-    private void initRunnable() {
-        bluetoothHandler = new Handler();
-        bluetoothRunnable = new Runnable() {
-            public void run() {
-                stopBeacon();
-                connectToWifi();
-            }
-        };
-    }
-
-    private AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
-        @Override
-        public void onStartFailure(int errorCode) {
-            Log.e("TAG", "Advertisement start failed with code: " + errorCode);
-        }
-
-        @Override
-        public void onStartSuccess(AdvertiseSettings settingsInEffect) {
-            Log.i("TAG", "Advertisement start succeeded.");
-        }
-    };
-
-    public void connectToWifi() {
-        String networkSSID = APP_PREFERENCES_SSID_DEVICES;
-        String networkPass = APP_PREFERENCES_PASSWORD_DEVICES;
-
-        WifiConfiguration wifiConfig = new WifiConfiguration();
-        wifiConfig.SSID = String.format("\"%s\"", networkSSID);
-        wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
-
-        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-
-        int netId = wifiManager.addNetwork(wifiConfig);
-        wifiManager.disconnect();
-        wifiManager.enableNetwork(netId, true);
-        wifiManager.reconnect();
     }
 
 

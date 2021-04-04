@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.Loca" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -35,7 +36,10 @@
 
         <activity android:label="@string/app_name" android:name=".passwordActivity.RegPasscodeActivity"
             android:theme="@style/AppTheme2.NoActionBar"
+            />
 
+        <activity android:label="@string/app_name" android:name=".settings.SettingActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             />
 
         <activity android:label="@string/app_name" android:name=".passwordActivity.LogPasscodeActivity"

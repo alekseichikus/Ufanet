@@ -9,6 +9,7 @@ import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,30 +27,17 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
-import com.example.ufanet.Json.JsonPlaceHolderApi2;
 import com.example.ufanet.R;
 import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Calendar;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class homeFragments extends BottomSheetDialogFragment {
 
     View view;
 
-    Handler handler;
-    Runnable myRunnable;
+    Handler handlerBluetooth;
+    Runnable runnableBluetooth;
     LinearLayout addButtonContainerLayout;
     CardView circleLinearLayout;
     CardView shareCardView;
@@ -60,9 +48,9 @@ public class homeFragments extends BottomSheetDialogFragment {
     Vibrator vibrator;
     MemoryOperation memoryOperation;
 
-    private BluetoothLeAdvertiser mAdvertiser;
-    private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothManager mBluetoothManager;
+    private BluetoothLeAdvertiser advertiser;
+    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothManager bluetoothManager;
     private int BEACON_BLUETOOTH_DELAY = 1000;
 
     private AdvertiseData.Builder dataBuilder;
@@ -114,18 +102,18 @@ public class homeFragments extends BottomSheetDialogFragment {
         settingsBuilder.setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
         settingsBuilder.setConnectable(false);
 
-        mBluetoothManager = (BluetoothManager) getContext().getSystemService(Context.BLUETOOTH_SERVICE);
+        bluetoothManager = (BluetoothManager) getContext().getSystemService(Context.BLUETOOTH_SERVICE);
 
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
-        mBluetoothAdapter.setName("UKEY");
-        mAdvertiser = mBluetoothAdapter.getBluetoothLeAdvertiser();
+        bluetoothAdapter = bluetoothManager.getAdapter();
+        bluetoothAdapter.setName("UKEY");
+        advertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
     }
 
     private void initRunnable(){
-        handler =  new Handler();
-        myRunnable = new Runnable() {
+        handlerBluetooth =  new Handler();
+        runnableBluetooth = new Runnable() {
             public void run() {
-                mAdvertiser.stopAdvertising(advertiseCallback);
+                advertiser.stopAdvertising(advertiseCallback);
 
                 addButtonContainerLayout.setBackgroundResource(R.drawable.transition_gradient_2);
                 AnimationDrawable animationDrawable = (AnimationDrawable) addButtonContainerLayout.getBackground();
@@ -150,8 +138,8 @@ public class homeFragments extends BottomSheetDialogFragment {
             @Override
             public void onClick(View v) {
 
-                mAdvertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
-                handler.postDelayed(myRunnable, BEACON_BLUETOOTH_DELAY);
+                advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
+                handlerBluetooth.postDelayed(runnableBluetooth, BEACON_BLUETOOTH_DELAY);
                 addButtonContainerLayout.setBackgroundResource(R.drawable.transition_gradient_1);
                 AnimationDrawable animationDrawable = (AnimationDrawable) addButtonContainerLayout.getBackground();
                 animationDrawable.setEnterFadeDuration(300);
@@ -169,11 +157,7 @@ public class homeFragments extends BottomSheetDialogFragment {
         settingButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-
-                AuthBottomDialogFragment addPhotoBottomDialogFragment =
-                        new AuthBottomDialogFragment();
-                addPhotoBottomDialogFragment.show(getFragmentManager(),
-                        "day_of_week_select_fragment");
+                shareText();
             }
         });
 
@@ -181,7 +165,10 @@ public class homeFragments extends BottomSheetDialogFragment {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                shareText();
+                AuthBottomDialogFragment addPhotoBottomDialogFragment =
+                        new AuthBottomDialogFragment();
+                addPhotoBottomDialogFragment.show(getFragmentManager(),
+                        "day_of_week_select_fragment");
             }
         });
     }

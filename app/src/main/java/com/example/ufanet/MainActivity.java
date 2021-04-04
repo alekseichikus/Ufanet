@@ -27,24 +27,6 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*chipNavigationBar = findViewById(R.id.chipNavigation);
-        chipNavigationBar.setItemSelected(R.id.navigation_home, true);
-
-        chipNavigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(int i) {
-                Fragment fragment = null;
-                switch (i) {
-                    case R.id.navigation_home:
-                        fragment = homeFragments;
-                        break;
-                    case R.id.navigation_note:
-                        fragment = profileFragments;
-                        break;
-                }
-                loadFragment(fragment);
-            }
-        });*/
 
         loadFragment(homeFragments);
     }

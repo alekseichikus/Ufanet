@@ -23,8 +23,6 @@ public class LogPasscodeActivity extends AppCompatActivity {
 
         initUI();
         setListeners();
-
-
     }
 
     private void initUI(){
