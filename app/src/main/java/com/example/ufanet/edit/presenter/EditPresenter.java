@@ -19,13 +19,9 @@ public class EditPresenter implements IEditPresenter, EditModel.OnFinishedListen
     }
 
     @Override
-    public void onFinished(String wlan_ssid, String wlan_pass
-            , Integer bluetooth, Integer wiegand, Integer dallas
-            , Integer gerkon, Integer button, Integer lock, Integer lock_invert
-            , Integer lock_time, Integer buzzer_case, Integer buzzer_gerkon
-            , Integer buzzer_key, Integer buzzer_lock, String time) {
+    public void onFinished() {
         if (view != null) {
-            view.onResponse("Конфиг перезаписан, перезагружаюсь");
+            /*view.onResponse("Конфиг перезаписан, перезагружаюсь");
             view.getMemoryOperation().setLoginUser(wlan_ssid);
             view.getMemoryOperation().setPasswordUser(wlan_pass);
             view.getMemoryOperation().setBluetoothSW(intToBoolean(bluetooth));
@@ -41,6 +37,7 @@ public class EditPresenter implements IEditPresenter, EditModel.OnFinishedListen
             view.getMemoryOperation().setBuzzerKeySW(intToBoolean(buzzer_key));
             view.getMemoryOperation().setBuzzerLockSW(intToBoolean(buzzer_lock));
             view.getMemoryOperation().setTimeConfig(time);
+            */
             view.closeView();
         }
     }
@@ -95,9 +92,7 @@ public class EditPresenter implements IEditPresenter, EditModel.OnFinishedListen
             if(isLoginUserValid(view.getLoginUser())){
                 if(isPasswordUserValid(view.getPasswordUser())){
                     if(isLockTimeValid(view.getLockTime())){
-                        model.sendConfig(this, view.getLoginUser(), view.getPasswordUser(), boolToInt(view.isBluetooth()), boolToInt(view.isWiegand()),
-                                boolToInt(view.isDallas()), boolToInt(view.isGerkon()), boolToInt(view.isButton()), boolToInt(view.isLock()), boolToInt(view.isLockInvert()), view.getLockTime(),
-                                boolToInt(view.isBuzzerCase()), boolToInt(view.isBuzzerGerkon()), boolToInt(view.isBuzzerKey()), boolToInt(view.isBuzzerLock()), "15236547893");
+                        model.sendConfig(this, view.getLoginUser(), view.getPasswordUser(), "CST-5",  15236547893l, view.getConfigsSelect());
                     }
                     else{
                         view.onResponse("LockTime не должен быть пустым");

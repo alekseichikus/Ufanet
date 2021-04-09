@@ -10,6 +10,7 @@ import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.LOCATION_SERVICE;
 import static android.content.Context.WIFI_SERVICE;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_PASSWORD_DEVICES;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_SSID_DEVICES;
@@ -119,7 +121,9 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     }
 
     void startBeacon(){
-        bluetoothAdvertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
+        if(bluetoothAdvertiser != null){
+            bluetoothAdvertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
+        }
     }
 
     private AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
@@ -150,6 +154,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
         wifiCheckConnectionRunnable = new Runnable() {
             public void run() {
+                Log.d("fweswe", wifiManager.getConnectionInfo().getSSID());
                 if(wifiManager.getConnectionInfo().getSSID().equals(String.format("\"%s\"",APP_PREFERENCES_SSID_DEVICES))){
                     Intent intent = new Intent(getActivity(), SettingActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -174,6 +179,8 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     public void connectToWifi() {
         String networkSSID = APP_PREFERENCES_SSID_DEVICES;
         String networkPass = APP_PREFERENCES_PASSWORD_DEVICES;
+
+
 
         WifiConfiguration wifiConfig = new WifiConfiguration();
         wifiConfig.SSID = String.format("\"%s\"", networkSSID);
@@ -225,6 +232,11 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                 }
                 else{
+                    if(isGeoDisabled()){
+                        LocationManager locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+
                     if(!isEmptyString(loginUserET.getText().toString())){
                         if(!isEmptyString(passwordUserET.getText().toString())){
                             memoryOperation.setLoginUser(loginUserET.getText().toString());
@@ -243,6 +255,15 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
             }
         });
     }
+
+    public boolean isGeoDisabled() {
+        LocationManager mLocationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        boolean mIsGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean mIsNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean mIsGeoDisabled = !mIsGPSEnabled && !mIsNetworkEnabled;
+        return mIsGeoDisabled;
+    }
+
     Boolean isEmptyString(String text){
         if(text.isEmpty())
             return true;

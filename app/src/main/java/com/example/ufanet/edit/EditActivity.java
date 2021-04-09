@@ -1,31 +1,34 @@
 package com.example.ufanet.edit;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.ufanet.Adapter.ConfigSelectAdapter;
 import com.example.ufanet.R;
+import com.example.ufanet.configSelect.ConfigSelectListActivity;
 import com.example.ufanet.edit.presenter.EditPresenter;
 import com.example.ufanet.edit.presenter.IEditPresenter;
+import com.example.ufanet.templates.ConfigSelect;
 import com.example.ufanet.utils.MemoryOperation;
 
-import static com.example.ufanet.utils.Constants.APP_PREFERENCES_PASSWORD_DEVICES;
-import static com.example.ufanet.utils.Constants.APP_PREFERENCES_SSID_DEVICES;
+import java.util.ArrayList;
 
 public class EditActivity extends AppCompatActivity implements IEditView {
 
@@ -34,19 +37,14 @@ public class EditActivity extends AppCompatActivity implements IEditView {
     EditText passwordUserET;
     CardView saveButtonCV;
     CardView closeButtonCV;
+    CardView addSlaveButtonCV;
 
-    Switch bluetoothSW;
-    Switch wiegandSW;
-    Switch dallasSW;
-    Switch gerkonSW;
-    Switch buttonSW;
-    Switch lockSW;
-    Switch lockInvertSW;
-    EditText lockTimeET;
-    Switch buzzerCaseSW;
-    Switch buzzerGerkonSW;
-    Switch buzzerKeySW;
-    Switch buzzerLockSW;
+    RecyclerView listView;
+    ArrayList<ConfigSelect> key_items = new ArrayList<>();
+
+    ConfigSelectAdapter configSelectAdapter;
+
+    //EditText lockTimeET;
 
     private BluetoothLeAdvertiser bluetoothAdvertiser;
     private BluetoothAdapter bluetoothAdapter;
@@ -69,24 +67,19 @@ public class EditActivity extends AppCompatActivity implements IEditView {
         memoryOperation = new MemoryOperation(this);
         presenter = new EditPresenter(this);
 
+        listView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        listView.setAdapter(configSelectAdapter);
+
+        key_items.add(new ConfigSelect("Главное устройство", "Не выбрано", (char) 565656));
+        configSelectAdapter.notifyDataSetChanged();
+
         setData();
     }
 
     void setData(){
         loginUserET.setText(memoryOperation.getLoginUser());
         passwordUserET.setText(memoryOperation.getPasswordUser());
-        bluetoothSW.setChecked(memoryOperation.getBluetoothSW());
-        wiegandSW.setChecked(memoryOperation.getWiegandSW());
-        dallasSW.setChecked(memoryOperation.getDallasSW());
-        gerkonSW.setChecked(memoryOperation.getGerkonSW());
-        buttonSW.setChecked(memoryOperation.getButtonSW());
-        lockSW.setChecked(memoryOperation.getLockSW());
-        lockInvertSW.setChecked(memoryOperation.getLockInvertSW());
         //lockTimeET.setText(memoryOperation.getLockTimeConfig());
-        buzzerCaseSW.setChecked(memoryOperation.getBuzzerCaseSW());
-        buzzerGerkonSW.setChecked(memoryOperation.getBuzzerGerkonSW());
-        buzzerKeySW.setChecked(memoryOperation.getBuzzerKeySW());
-        buzzerLockSW.setChecked(memoryOperation.getBuzzerLockSW());
     }
 
     void setListeners() {
@@ -103,26 +96,29 @@ public class EditActivity extends AppCompatActivity implements IEditView {
                 finish();
             }
         });
+
+        addSlaveButtonCV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                key_items.add(new ConfigSelect("Дополнительное устройство", "Не выбрано", (char) 565656));
+                configSelectAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     void initUI() {
         loginUserET = findViewById(R.id.et_login);
         passwordUserET = findViewById(R.id.et_password);
         saveButtonCV = findViewById(R.id.cv_save_button);
+        addSlaveButtonCV = findViewById(R.id.cv_add_slave_button);
 
-        bluetoothSW = findViewById(R.id.sw_bluetooth);
-        wiegandSW = findViewById(R.id.sw_wiegand);
-        dallasSW = findViewById(R.id.sw_dallas);
-        gerkonSW = findViewById(R.id.sw_gerkon);
         closeButtonCV = findViewById(R.id.cv_close_button);
-        buttonSW = findViewById(R.id.sw_button);
-        lockSW = findViewById(R.id.sw_lock);
-        lockInvertSW = findViewById(R.id.sw_lock_invert);
-        lockTimeET = findViewById(R.id.et_time_open_lock);
-        buzzerCaseSW = findViewById(R.id.sw_buzzer_case);
-        buzzerGerkonSW = findViewById(R.id.sw_buzzer_gerkon);
-        buzzerKeySW = findViewById(R.id.sw_buzzer_key);
-        buzzerLockSW = findViewById(R.id.sw_buzzer_lock);
+
+        //lockTimeET = findViewById(R.id.et_time_open_lock);
+
+        configSelectAdapter = new ConfigSelectAdapter( EditActivity.this, key_items);
+        listView = findViewById(R.id.list);
+
     }
 
 
@@ -137,68 +133,14 @@ public class EditActivity extends AppCompatActivity implements IEditView {
     }
 
     @Override
-    public Boolean isWiegand() {
-        return wiegandSW.isChecked();
-    }
-
-    @Override
-    public Boolean isDallas() {
-        return dallasSW.isChecked();
-    }
-
-    @Override
-    public Boolean isGerkon() {
-        return gerkonSW.isChecked();
-    }
-
-    @Override
-    public Boolean isButton() {
-        return buttonSW.isChecked();
-    }
-
-    @Override
     public MemoryOperation getMemoryOperation() {
         return memoryOperation;
     }
 
     @Override
-    public Boolean isBluetooth() {
-        return bluetoothSW.isChecked();
-    }
-
-    @Override
-    public Boolean isLock() {
-        return lockSW.isChecked();
-    }
-
-    @Override
-    public Boolean isLockInvert() {
-        return lockInvertSW.isChecked();
-    }
-
-    @Override
     public Integer getLockTime() {
-        return Integer.valueOf(lockTimeET.getText().toString());
-    }
-
-    @Override
-    public Boolean isBuzzerCase() {
-        return buzzerCaseSW.isChecked();
-    }
-
-    @Override
-    public Boolean isBuzzerGerkon() {
-        return buzzerGerkonSW.isChecked();
-    }
-
-    @Override
-    public Boolean isBuzzerKey() {
-        return buzzerKeySW.isChecked();
-    }
-
-    @Override
-    public Boolean isBuzzerLock() {
-        return buzzerLockSW.isChecked();
+        //Integer.valueOf(lockTimeET.getText().toString())
+        return 11;
     }
 
     @Override
@@ -212,6 +154,14 @@ public class EditActivity extends AppCompatActivity implements IEditView {
     }
 
     @Override
+    public void startSelectConfigActivity(Integer position) {
+        Intent intent = new Intent(EditActivity.this, ConfigSelectListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.putExtra("id_device", position);
+        startActivityForResult(intent, 100);
+    }
+
+    @Override
     public void onResponseFailure(Throwable throwable) {
         Toast.makeText(this, "Произошла какая-то бяка", Toast.LENGTH_SHORT).show();
     }
@@ -219,5 +169,33 @@ public class EditActivity extends AppCompatActivity implements IEditView {
     @Override
     public IEditPresenter getPresenter() {
         return presenter;
+    }
+
+    @Override
+    public Integer[] getConfigsSelect() {
+        Integer[] items = new Integer[key_items.size()];
+        for (int i = 0; i < key_items.size(); i++) {
+            items[i] = (int)key_items.get(i).getConfigWord();
+        }
+        return items;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("erggreg", "asdasd");
+        if (resultCode == Activity.RESULT_OK) {
+            Log.d("erggreg", "sdsadasd");
+            // TODO Extract the data returned from the child Activity.
+            Integer id_device = data.getIntExtra("id_device", 0);
+            Integer id_config = data.getIntExtra("id_config", 0);
+            key_items.get(id_device).setNameConfig(memoryOperation.getConfigDataName(id_config));
+            configSelectAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 }

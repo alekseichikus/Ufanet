@@ -1,16 +1,19 @@
 package com.example.ufanet.Json;
 
+import com.example.ufanet.settings.IKey;
 import com.example.ufanet.templates.Config;
 import com.example.ufanet.templates.ResponseCode;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
-public interface JsonPlaceHolderApi3 {
+public interface JsonPlaceHolderApi5 {
 
-    @POST("restart")
-    @Headers({"Content-Type: application/json"})
-    Call<ResponseCode> getMyJSON();
+    @POST("keys")
+    @Headers({"Content-Type: text/plain"})
+    Call<ResponseCode> getMyJSON(@Body String keys);
 }

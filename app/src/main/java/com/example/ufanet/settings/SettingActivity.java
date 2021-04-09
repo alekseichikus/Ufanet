@@ -1,6 +1,5 @@
 package com.example.ufanet.settings;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,29 +11,34 @@ import androidx.cardview.widget.CardView;
 
 import com.example.ufanet.Json.JsonPlaceHolderApi4;
 import com.example.ufanet.R;
+import com.example.ufanet.addConfig.AddConfigActivity;
+import com.example.ufanet.configList.ConfigListActivity;
 import com.example.ufanet.edit.EditActivity;
 import com.example.ufanet.edit.model.EditModel;
-import com.example.ufanet.edit.presenter.IEditPresenter;
+import com.example.ufanet.home.addKey.AddKeyActivity;
+import com.example.ufanet.keyss.KeyListActivity;
 import com.example.ufanet.settings.presenter.ISettingPresenter;
 import com.example.ufanet.settings.presenter.SettingPresenter;
 import com.example.ufanet.utils.Constants;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
 
 public class SettingActivity extends AppCompatActivity implements ISettingView {
 
@@ -42,7 +46,12 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
     CardView reloadButtonCV;
     CardView updateButtonCV;
     CardView addKeyButtonCV;
+    CardView keyListButtonCV;
     CardView closeButtonCV;
+    CardView addConfigButtonCV;
+    CardView configListButtonCV;
+
+    final String FILENAME = "file";
 
     ISettingPresenter presenter;
 
@@ -62,8 +71,45 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
         settingButtonCV = findViewById(R.id.cv_setting_button);
         reloadButtonCV = findViewById(R.id.cv_reload_button);
         updateButtonCV = findViewById(R.id.cv_update_device_button);
+        keyListButtonCV = findViewById(R.id.cv_keys_list_button);
         addKeyButtonCV = findViewById(R.id.cv_add_key_button);
         closeButtonCV = findViewById(R.id.cv_close_button);
+        addConfigButtonCV = findViewById(R.id.cv_add_config_button);
+        configListButtonCV = findViewById(R.id.cv_config_list_button);
+    }
+
+    void writeFile() {
+        try {
+            // отрываем поток для записи
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                    openFileOutput(FILENAME, MODE_PRIVATE)));
+            // пишем данные
+            bw.write("Содержимое файла");
+            // закрываем поток
+            bw.close();
+            Log.d("sdas", "Файл записан");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void readFile() {
+        try {
+            // открываем поток для чтения
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    openFileInput(FILENAME)));
+            String str = "";
+            // читаем содержимое
+            while ((str = br.readLine()) != null) {
+                Log.d("sdas", str);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     void setListeners(){
@@ -72,9 +118,33 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
                 Intent intent = new Intent(SettingActivity.this, EditActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
-                finish();
             }
         });
+
+        keyListButtonCV.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(SettingActivity.this, KeyListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+            }
+        });
+
+        addConfigButtonCV.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(SettingActivity.this, AddConfigActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+            }
+        });
+
+        configListButtonCV.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(SettingActivity.this, ConfigListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+            }
+        });
+
         reloadButtonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,11 +155,9 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
         addKeyButtonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    read_file("keys.txt");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Intent intent = new Intent(SettingActivity.this, AddKeyActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
             }
         });
 
@@ -128,20 +196,6 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
                 });
             }
         });
-    }
-
-    public void read_file(String filename) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                getAssets().open(filename)));
-
-        int i=0;
-        String line = reader.readLine();
-        while (line != null) {
-            Log.d("key", line);
-            line = reader.readLine();
-        }
-
-        reader.close();
     }
 
     class ServerResponse {

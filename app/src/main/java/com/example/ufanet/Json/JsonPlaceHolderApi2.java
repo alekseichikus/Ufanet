@@ -13,5 +13,6 @@ import retrofit2.http.Query;
 public interface JsonPlaceHolderApi2 {
 
     @POST("config")
+    @Headers({"Content-Type: application/json"})
     Call<Config> getMyJSON(@Body Config config);
 }

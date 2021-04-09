@@ -24,4 +24,9 @@ public class Constants {
     public static final String APP_PREFERENCES_CONFIG_BUZZER_LOCK_SW = "config_buzzer_lock_sw";
     public static final String APP_PREFERENCES_CONFIG_TIME = "config_time";
     public static final String APP_PREFERENCES_CONFIG_LOCK_TIME = "config_lock_time";
+
+    public static final String APP_PREFERENCES_CONFIG_ARRAY_SIZE = "config_array_size";
+    public static final String APP_PREFERENCES_KEY_ARRAY_SIZE = "key_array_size";
+    public static final String APP_PREFERENCES_CONFIG_DATA = "config_data";
+    public static final String APP_PREFERENCES_KEY_DATA = "key_data";
 }

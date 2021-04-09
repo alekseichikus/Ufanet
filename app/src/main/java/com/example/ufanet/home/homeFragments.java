@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.ufanet.R;
+import com.example.ufanet.templates.TrimConfig;
 import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -81,7 +82,7 @@ public class homeFragments extends BottomSheetDialogFragment {
         setListeners();
         initRunnable();
 
-
+        //TrimConfig trimConfig = new TrimConfig("a", (char) 65507);
         return view;
     }
 
@@ -168,7 +169,7 @@ public class homeFragments extends BottomSheetDialogFragment {
                 AuthBottomDialogFragment addPhotoBottomDialogFragment =
                         new AuthBottomDialogFragment();
                 addPhotoBottomDialogFragment.show(getFragmentManager(),
-                        "day_of_week_select_fragment");
+                        "auth_fragment");
             }
         });
     }

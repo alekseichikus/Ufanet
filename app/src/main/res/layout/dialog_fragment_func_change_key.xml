@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_corners_shape"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:foreground="?android:selectableItemBackground"
+        android:id="@+id/ll_change_key"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_key_r"
+            android:layout_gravity="center"
+            android:tint="#c7c8c9">
+        </ImageView>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="16dp"
+            android:textColor="#313435"
+            android:textSize="17sp"
+            android:maxLines="1"
+            android:layout_weight="0.4"
+            android:ellipsize="end"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Изменить ключ">
+
+        </TextView>
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_angle_right"
+            android:layout_gravity="center"
+            android:tint="#a7a8a9">
+        </ImageView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:padding="16dp"
+        android:foreground="?android:selectableItemBackground"
+        android:id="@+id/ll_delete_key"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_trash_r"
+            android:layout_gravity="center"
+            android:tint="#c7c8c9">
+        </ImageView>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="16dp"
+            android:textColor="#313435"
+            android:textSize="17sp"
+            android:maxLines="1"
+            android:layout_weight="0.4"
+            android:ellipsize="end"
+            android:fontFamily="@font/roboto_regular"
+            android:text="Удалить ключ">
+
+        </TextView>
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_angle_right"
+            android:layout_gravity="center"
+            android:tint="#a7a8a9">
+        </ImageView>
+    </LinearLayout>
+    </LinearLayout>

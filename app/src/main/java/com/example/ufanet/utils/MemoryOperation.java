@@ -3,9 +3,17 @@ package com.example.ufanet.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.example.ufanet.settings.IKey;
+import com.example.ufanet.templates.TrimConfig;
+
+import java.io.BufferedReader;
+import java.util.ArrayList;
 
 import static com.example.ufanet.profile.profileFragments.APP_PREFERENCES_LOGIN_USER;
 import static com.example.ufanet.profile.profileFragments.APP_PREFERENCES_PASSWORD_USER;
+import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_ARRAY_SIZE;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_BLUETOOTH_SW;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_BUTTON_SW;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_BUZZER_CASE_SW;
@@ -13,12 +21,15 @@ import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_BUZZER_G
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_BUZZER_KEY_SW;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_BUZZER_LOCK_SW;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_DALLAS_SW;
+import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_DATA;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_GERKON_SW;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_LOCK_INVERT_SW;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_LOCK_SW;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_LOCK_TIME;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_TIME;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_WIEGAND_SW;
+import static com.example.ufanet.utils.Constants.APP_PREFERENCES_KEY_ARRAY_SIZE;
+import static com.example.ufanet.utils.Constants.APP_PREFERENCES_KEY_DATA;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_PASSCODE_USER;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_TOKEN_USER;
 
@@ -41,7 +52,7 @@ public class MemoryOperation {
     }
 
     public String getPasswordUser() {
-        return sharedPreferences.getString(APP_PREFERENCES_PASSWORD_USER, "");
+        return sharedPreferences.getString(APP_PREFERENCES_PASSWORD_USER, "1234567890");
     }
 
     public void setPasswordUser(String path) {
@@ -57,7 +68,131 @@ public class MemoryOperation {
     }
 
     public String getLoginUser() {
-        return sharedPreferences.getString(APP_PREFERENCES_LOGIN_USER, "");
+        return sharedPreferences.getString(APP_PREFERENCES_LOGIN_USER, "SCUD");
+    }
+
+    public Integer getConfigsArraySize() {
+        return sharedPreferences.getInt(APP_PREFERENCES_CONFIG_ARRAY_SIZE, 0);
+    }
+    public Integer getKeyArraySize() {
+        return sharedPreferences.getInt(APP_PREFERENCES_KEY_ARRAY_SIZE, 0);
+    }
+
+    public char getConfigDataWord(Integer i) {
+        return (char) sharedPreferences.getInt(APP_PREFERENCES_CONFIG_DATA + "_" + i + "_word", 0);
+    }
+
+    public String getConfigDataName(Integer i) {
+        return sharedPreferences.getString(APP_PREFERENCES_CONFIG_DATA + "_" + i + "_name", "Конфиг");
+    }
+
+    public String getKeyDataFIO(Integer i) {
+        return sharedPreferences.getString(APP_PREFERENCES_KEY_DATA + "_" + i + "_fio", "");
+    }
+
+    public String getKeyDataKey(Integer i) {
+        return sharedPreferences.getString(APP_PREFERENCES_KEY_DATA + "_" + i + "_key", "");
+    }
+
+    public Integer getKeyDataType(Integer i) {
+        return sharedPreferences.getInt(APP_PREFERENCES_KEY_DATA + "_" + i + "_type", 0);
+    }
+
+    public void setConfigDataWord(Integer i, Integer path) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(APP_PREFERENCES_CONFIG_DATA + "_" + i + "_word", path);
+        editor.commit();
+    }
+
+    public void setKeyDataFio(Integer i, String path) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(APP_PREFERENCES_KEY_DATA + "_" + i + "_fio", path);
+        editor.commit();
+    }
+
+    public void setKeyDataKey(Integer i, String path) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(APP_PREFERENCES_KEY_DATA + "_" + i + "_key", path);
+        editor.commit();
+    }
+
+    public void setKeyDataType(Integer i, Integer path) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(APP_PREFERENCES_KEY_DATA + "_" + i + "_type", path);
+        editor.commit();
+    }
+
+    public void setConfigDataName(Integer i, String path) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(APP_PREFERENCES_CONFIG_DATA + "_" + i + "_name", path);
+        editor.commit();
+    }
+
+    public void setConfigsArraySize(Integer i) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(APP_PREFERENCES_CONFIG_ARRAY_SIZE, i);
+        editor.commit();
+    }
+
+    public void setKeyArraySize(Integer i) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(APP_PREFERENCES_KEY_ARRAY_SIZE, i);
+        editor.commit();
+    }
+
+    public ArrayList<IKey> getKeyList(){
+        BufferedReader reader = null;
+        ArrayList<IKey> items = new ArrayList<>();
+        for (int i = 0; i < getKeyArraySize(); i++) {
+            IKey trimConfig = new IKey(getKeyDataFIO(i), getKeyDataKey(i), getKeyDataType(i));
+            items.add(trimConfig);
+        }
+        return items;
+    }
+
+    public ArrayList<TrimConfig> getConfigList(){
+        BufferedReader reader = null;
+        ArrayList<TrimConfig> items = new ArrayList<>();
+        for (int i = 0; i < getConfigsArraySize(); i++) {
+            TrimConfig trimConfig = new TrimConfig(getConfigDataName(i), getConfigDataWord(i));
+            items.add(trimConfig);
+        }
+        return items;
+    }
+
+    public void deleteConfig(Integer id_config){
+        Log.d("id_config delete", String.valueOf(id_config));
+        ArrayList<TrimConfig> configs = new ArrayList<>();
+        for (int i = 0; i < getConfigsArraySize(); i++) {
+            if(i != id_config){
+                configs.add(new TrimConfig(getConfigDataName(i), getConfigDataWord(i)));
+            }
+        }
+
+        setConfigsArraySize(getConfigsArraySize()-1);
+
+        for (int i = 0; i < getConfigsArraySize(); i++) {
+            setConfigDataWord(i, (int) configs.get(i).getConfigWord());
+            setConfigDataName(i, configs.get(i).getNameConfig());
+        }
+    }
+
+    public void deleteKey(Integer id_key){
+        Log.d("id_config delete", String.valueOf(id_key));
+        ArrayList<IKey> configs = new ArrayList<>();
+        for (int i = 0; i < getKeyArraySize(); i++) {
+            if(i != id_key){
+                configs.add(new IKey(getKeyDataFIO(i), getKeyDataKey(i), getKeyDataType(i)));
+            }
+        }
+
+        setKeyArraySize(getKeyArraySize()-1);
+
+        for (int i = 0; i < getKeyArraySize(); i++) {
+            setKeyDataFio(i, configs.get(i).getFio());
+            setKeyDataKey(i, configs.get(i).getKeyBytes());
+            setKeyDataType(i, configs.get(i).getType());
+        }
     }
 
     public Boolean isLoginUserValid(){

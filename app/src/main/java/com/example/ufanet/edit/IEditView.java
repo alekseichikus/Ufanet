@@ -1,5 +1,7 @@
 package com.example.ufanet.edit;
 
+import android.content.Context;
+
 import com.example.ufanet.edit.presenter.IEditPresenter;
 import com.example.ufanet.utils.MemoryOperation;
 
@@ -12,25 +14,17 @@ public interface IEditView {
 
     String getPasswordUser();
 
-    Boolean isWiegand();
-
-    Boolean isDallas();
-    Boolean isGerkon();
-    Boolean isButton();
     MemoryOperation getMemoryOperation();
-    Boolean isBluetooth();
-    Boolean isLock();
-    Boolean isLockInvert();
     Integer getLockTime();
-    Boolean isBuzzerCase();
-    Boolean isBuzzerGerkon();
-    Boolean isBuzzerKey();
-    Boolean isBuzzerLock();
 
     void  onResponse(String string);
     void  closeView();
+    void  startSelectConfigActivity(Integer position);
 
     void onResponseFailure(Throwable throwable);
 
     IEditPresenter getPresenter();
+    Integer[] getConfigsSelect();
+
+    Context getContext();
 }
