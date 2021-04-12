@@ -16,3 +16,16 @@ public interface JsonPlaceHolderApi2 {
     @Headers({"Content-Type: application/json"})
     Call<Config> getMyJSON(@Body Config config);
 }
+
+//wlan_ssid="SCUD"
+//        wlan_pass="1234567890"
+//        unixtime="1617786779"
+//        timezone="CST-5"
+//        master="65507"
+//        slave_1="65507"
+//        slave_2="65507"
+//        slave_3="65507"
+//        slave_4="65507"
+//        slave_5="65507"
+//        slave_6="65507"
+//        slave_7="65507"

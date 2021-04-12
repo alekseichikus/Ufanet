@@ -7,14 +7,26 @@ import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
+import android.content.IntentFilter;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
+import android.net.wifi.ScanResult;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.net.wifi.WifiNetworkSpecifier;
+import android.net.wifi.WifiNetworkSuggestion;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +44,11 @@ import com.example.ufanet.settings.SettingActivity;
 import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static android.app.Activity.RESULT_OK;
+import static android.content.ContentValues.TAG;
 import static android.content.Context.LOCATION_SERVICE;
 import static android.content.Context.WIFI_SERVICE;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_PASSWORD_DEVICES;
@@ -69,6 +85,14 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     private int WIFI_CHECK_CONNECTION_DELAY = 500;
     private int attempts_wifi_connect = 0;
 
+    int netId;
+
+    WifiConfiguration wifiConfig;
+    private WifiReceiver wifiResiver;
+
+    String networkSSID = APP_PREFERENCES_SSID_DEVICES;
+    String networkPass = APP_PREFERENCES_PASSWORD_DEVICES;
+
     byte[] payload = {(byte) 0x55,
             (byte) 0x10, (byte) 0x20, (byte) 0x20, (byte) 0x10, (byte) 0x40, (byte) 0x30, (byte) 0x50, (byte) 0x90, (byte) 0x43, (byte) 0x02};
 
@@ -96,6 +120,17 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
         wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(WIFI_SERVICE);
 
+        wifiConfig = new WifiConfiguration();
+        wifiConfig.SSID = String.format("\"%s\"", networkSSID);
+        wifiConfig.priority = 1;
+        wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
+
+        wifiResiver = new WifiReceiver();
+
+        netId = wifiManager.addNetwork(wifiConfig);
+
+
+
         initUI();
         setListeners();
         initRunnable();
@@ -104,7 +139,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         bluetoothManager = (BluetoothManager) getContext().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
-        wifiManager.disconnect();
 
         memoryOperation = new MemoryOperation(getContext());
 
@@ -141,14 +175,8 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     private void initRunnable() {
         bluetoothRunnable = new Runnable() {
             public void run() {
-
-                if(wifiManager.isWifiEnabled()){
-                }
-                else{
-                    wifiManager.setWifiEnabled(true);
-                }
                 stopBeacon();
-                connectToWifi();
+                //connectToWifi();
             }
         };
 
@@ -177,17 +205,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     }
 
     public void connectToWifi() {
-        String networkSSID = APP_PREFERENCES_SSID_DEVICES;
-        String networkPass = APP_PREFERENCES_PASSWORD_DEVICES;
 
-
-
-        WifiConfiguration wifiConfig = new WifiConfiguration();
-        wifiConfig.SSID = String.format("\"%s\"", networkSSID);
-        wifiConfig.priority = 1;
-        wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
-
-        int netId = wifiManager.addNetwork(wifiConfig);
 
         wifiManager.disconnect();
         wifiManager.enableNetwork(netId, true);
@@ -214,7 +232,9 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     }
 
     void stopBeacon(){
-        bluetoothAdvertiser.stopAdvertising(advertiseCallback);
+        if(bluetoothAdvertiser != null){
+            bluetoothAdvertiser.stopAdvertising(advertiseCallback);
+        }
     }
 
     @Override
@@ -222,6 +242,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         super.onResume();
         loginUserET.setText(memoryOperation.getLoginUser());
         passwordUserET.setText(memoryOperation.getPasswordUser());
+        getActivity().registerReceiver(wifiResiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
     void setListeners(){
@@ -235,25 +256,60 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                     if(isGeoDisabled()){
                         LocationManager locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
                         startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    }
 
-                    if(!isEmptyString(loginUserET.getText().toString())){
-                        if(!isEmptyString(passwordUserET.getText().toString())){
-                            memoryOperation.setLoginUser(loginUserET.getText().toString());
-                            memoryOperation.setPasswordUser(passwordUserET.getText().toString());
-                            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                            startActivityForResult(intent, 1);
-                        }
-                        else{
-                            Toast.makeText(getContext(), "Введите пароль", Toast.LENGTH_SHORT).show();
-                        }
                     }
                     else{
-                        Toast.makeText(getContext(), "Введите логин", Toast.LENGTH_SHORT).show();
+                        if (bluetoothAdapter != null) {
+                            if(bluetoothAdapter.isEnabled()){
+                                if(wifiManager.isWifiEnabled()){
+                                    Log.d("wifi is enable", "true");
+                                    if(!isEmptyString(loginUserET.getText().toString())){
+                                        if(!isEmptyString(passwordUserET.getText().toString())){
+                                            memoryOperation.setLoginUser(loginUserET.getText().toString());
+                                            memoryOperation.setPasswordUser(passwordUserET.getText().toString());
+
+                                            startBeacon();
+                                            Log.d("wefwef", "dwadad");
+                                            bluetoothHandler.postDelayed(bluetoothRunnable, BEACON_BLUETOOTH_DELAY);
+                                            scheduleSendLocation();
+                                        }
+                                        else{
+                                            Toast.makeText(getContext(), "Введите пароль", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    else{
+                                        Toast.makeText(getContext(), "Введите логин", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                else{
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                        Intent panelIntent = new Intent(Settings.Panel.ACTION_INTERNET_CONNECTIVITY);
+                                        startActivityForResult(panelIntent, 0);
+                                    } else {
+                                        wifiManager.setWifiEnabled(true);
+                                    }
+                                }
+
+                            }
+                            else{
+                                Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                                startActivityForResult(intent, 1);
+                            }
+
+                        }
+                        else{
+                            AuthBottomDialogFragment.this.onResponse("Ваше устройство не поддерживает Bluetooth");
+                        }
                     }
                 }
             }
         });
+    }
+
+    public void scheduleSendLocation() {
+
+        getActivity().registerReceiver(wifiResiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        wifiManager.startScan();
     }
 
     public boolean isGeoDisabled() {
@@ -273,10 +329,80 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1){
-            if(resultCode == RESULT_OK && bluetoothAdapter.isEnabled()){
-                startBeacon();
-                bluetoothHandler.postDelayed(bluetoothRunnable, BEACON_BLUETOOTH_DELAY);
+
+    }
+
+    public void onResponse(String string) {
+        Toast.makeText(getContext(), string, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(wifiResiver);
+    }
+
+
+    public class WifiReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context c, Intent intent) {
+
+            //сканируем вайфай точки и узнаем какие доступны
+            List<ScanResult> results = wifiManager.getScanResults();
+            //проходимся по всем возможным точкам
+            for (final ScanResult ap : results) {
+                //ищем нужную нам точку с помощью ифа, будет находить то которую вы ввели
+                Log.d("nkhnefwef", ap.SSID.toString());
+                if(ap.SSID.toString().trim().equals("SCUD")) {
+                    Log.d("kjljklkjl", ap.SSID.toString());
+                    // дальше получаем ее MAC и передаем для коннекрта, MAC получаем из результата
+                    //здесь мы уже начинаем коннектиться
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                        WifiNetworkSpecifier.Builder builder = new WifiNetworkSpecifier.Builder();
+                        builder.setSsid(APP_PREFERENCES_SSID_DEVICES);
+                        builder.setWpa2Passphrase(APP_PREFERENCES_PASSWORD_DEVICES);
+
+                        WifiNetworkSpecifier wifiNetworkSpecifier = builder.build();
+
+                        NetworkRequest.Builder networkRequestBuilder1 = new NetworkRequest.Builder();
+                        networkRequestBuilder1.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+                        networkRequestBuilder1.setNetworkSpecifier(wifiNetworkSpecifier);
+
+                        NetworkRequest nr = networkRequestBuilder1.build();
+                        ConnectivityManager cm = (ConnectivityManager)
+                                getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                        ConnectivityManager.NetworkCallback networkCallback = new
+                                ConnectivityManager.NetworkCallback() {
+                                    @Override
+                                    public void onAvailable(Network network) {
+                                        super.onAvailable(network);
+                                        Log.d(TAG, "onAvailable:" + network);
+                                        cm.bindProcessToNetwork(network);
+                                        Intent intent = new Intent(getActivity(), SettingActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                        startActivity(intent);
+                                    }
+                                };
+                        cm.requestNetwork(nr, networkCallback);
+                    }
+                    else{
+                        wifiConfig.SSID = String.format("\"%s\"", networkSSID);
+                        wifiConfig.priority = 1;
+                        wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
+
+                        //получаем ID сети и пытаемся к ней подключиться,
+                        int netId = wifiManager.addNetwork(wifiConfig);
+                        wifiManager.saveConfiguration();
+
+                        Log.d("ergergerger", String.valueOf(netId));
+                        //если вайфай выключен то включаем его
+                        wifiManager.enableNetwork(netId, true);
+                        //если же он включен но подключен к другой сети то перегружаем вайфай.
+                        wifiManager.reconnect();
+                    }
+                    break;
+                }
             }
         }
     }
