@@ -9,8 +9,6 @@ public class Constants {
     public static final String APP_PREFERENCES_SSID_DEVICES = "SCUD";
     public static final String APP_PREFERENCES_PASSWORD_DEVICES = "1234567890";
 
-
-
     public static final String APP_PREFERENCES_CONFIG_BLUETOOTH_SW = "config_bluetooth_sw";
     public static final String APP_PREFERENCES_CONFIG_WIEGAND_SW = "config_wiegand_sw";
     public static final String APP_PREFERENCES_CONFIG_DALLAS_SW = "config_dallas_sw";

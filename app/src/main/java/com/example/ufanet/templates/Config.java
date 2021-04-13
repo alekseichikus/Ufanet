@@ -2,9 +2,6 @@ package com.example.ufanet.templates;
 
 public class Config {
 
-
-
-
     private Integer[] config;
     private long time;
     private String wlan_pass;

@@ -12,12 +12,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-
 import com.example.ufanet.R;
-import com.example.ufanet.addConfig.IAddConfigView;
 import com.example.ufanet.templates.TrimConfig;
 import com.example.ufanet.utils.MemoryOperation;
 
@@ -41,13 +38,6 @@ public class EditConfigActivity extends AppCompatActivity implements IEditConfig
     Switch buzzerKeySW;
     Switch buzzerLockSW;
 
-    private BluetoothLeAdvertiser bluetoothAdvertiser;
-    private BluetoothAdapter bluetoothAdapter;
-    private BluetoothManager bluetoothManager;
-
-    private AdvertiseData.Builder dataBuilder;
-    private AdvertiseSettings.Builder settingsBuilder;
-
     private TrimConfig trimConfig;
     private Integer id_config = 0;
 
@@ -67,7 +57,6 @@ public class EditConfigActivity extends AppCompatActivity implements IEditConfig
     }
 
     void setData(){
-        Log.d("lkgkdgnlkg", trimConfig.getWiegand().toString());
         setWiegand(intToBoolean(trimConfig.getWiegand()));
         setDallas(intToBoolean(trimConfig.getDallas()));
         setGerkon(intToBoolean(trimConfig.getGerkon()));

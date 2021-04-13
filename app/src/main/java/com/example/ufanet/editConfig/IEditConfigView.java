@@ -4,7 +4,6 @@ import com.example.ufanet.utils.MemoryOperation;
 
 public interface IEditConfigView {
 
-
     Boolean isWiegand();
 
     Boolean isDallas();

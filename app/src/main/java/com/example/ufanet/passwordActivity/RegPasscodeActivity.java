@@ -10,7 +10,6 @@ import com.example.ufanet.R;
 import com.example.ufanet.passwordView.PasscodeView;
 import com.example.ufanet.utils.MemoryOperation;
 
-
 public class RegPasscodeActivity extends AppCompatActivity {
 
     private MemoryOperation memoryOperation;

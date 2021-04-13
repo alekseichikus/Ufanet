@@ -20,14 +20,9 @@ import com.example.ufanet.utils.MemoryOperation;
 
 public class ControKeyListDialogFragment extends DialogFragment {
 
-    LinearLayout changeNoteButton;
     Button deleteKeyButton;
     LinearLayout editKeyButton;
-
     MemoryOperation memoryOperation;
-
-    TrimConfig trimConfig;
-
     Integer id_key;
 
     public ControKeyListDialogFragment(Integer id_key){
@@ -36,7 +31,7 @@ public class ControKeyListDialogFragment extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.dialog_fragment_control_config_list, container, false);
+        View rootView = inflater.inflate(R.layout.dialog_fragment_control_key_list, container, false);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
@@ -58,6 +53,8 @@ public class ControKeyListDialogFragment extends DialogFragment {
             public void onClick(View v) {
                 memoryOperation.deleteKey(id_key);
                 dismiss();
+                KeyListActivity keyListActivity = (KeyListActivity) getActivity();
+                keyListActivity.onResume();
             }
         });
 

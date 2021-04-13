@@ -1,8 +1,6 @@
 package com.example.ufanet.settings;
 
-import com.example.ufanet.edit.presenter.IEditPresenter;
 import com.example.ufanet.settings.presenter.ISettingPresenter;
-import com.example.ufanet.utils.MemoryOperation;
 
 public interface ISettingView {
 

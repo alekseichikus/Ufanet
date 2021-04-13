@@ -1,6 +1,5 @@
 package com.example.ufanet.configList;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -9,24 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.LinearLayout;
-
 import androidx.fragment.app.DialogFragment;
-
 import com.example.ufanet.R;
-import com.example.ufanet.templates.TrimConfig;
 import com.example.ufanet.utils.MemoryOperation;
-
-import java.util.ArrayList;
 
 public class ControlConfigListDialogFragment extends DialogFragment {
 
-    LinearLayout changeNoteButton;
     Button deleteConfigButton;
 
     MemoryOperation memoryOperation;
-
-    TrimConfig trimConfig;
 
     Integer id_config;
 
@@ -60,5 +50,4 @@ public class ControlConfigListDialogFragment extends DialogFragment {
             }
         });
     }
-
 }

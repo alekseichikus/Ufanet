@@ -1,7 +1,5 @@
 package com.example.ufanet.templates;
 
-import android.util.Log;
-
 public class ConfigSelect {
 
     char configWord;
@@ -25,6 +23,9 @@ public class ConfigSelect {
 
     public void setNameConfig(String nameConfig){
         this.nameConfig = nameConfig;
+    }
+    public void setWordConfig(char configWord){
+        this.configWord = configWord;
     }
 
     public String getNameUser() {

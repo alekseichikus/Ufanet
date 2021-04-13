@@ -1,42 +1,23 @@
 package com.example.ufanet.editKey;
-
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.AdvertiseData;
-import android.bluetooth.le.AdvertiseSettings;
-import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-
 import com.example.ufanet.R;
-import com.example.ufanet.editConfig.IEditConfigView;
-import com.example.ufanet.templates.TrimConfig;
 import com.example.ufanet.utils.MemoryOperation;
 
 public class EditKeyActivity extends AppCompatActivity implements IEditKeyView {
 
     MemoryOperation memoryOperation;
-    EditText nameConfigET;
+    EditText fioET;
+    EditText keyET;
     CardView saveButtonCV;
     CardView closeButtonCV;
 
-    private BluetoothLeAdvertiser bluetoothAdvertiser;
-    private BluetoothAdapter bluetoothAdapter;
-    private BluetoothManager bluetoothManager;
-
-    private AdvertiseData.Builder dataBuilder;
-    private AdvertiseSettings.Builder settingsBuilder;
-
-    private TrimConfig trimConfig;
-    private Integer id_config = 0;
+    private Integer id_key = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,23 +27,22 @@ public class EditKeyActivity extends AppCompatActivity implements IEditKeyView {
         setListeners();
 
         Intent intent = getIntent();
-        id_config = intent.getIntExtra("id_config", 0);
-
-        trimConfig = new TrimConfig(memoryOperation.getConfigDataName(id_config), memoryOperation.getConfigDataWord(id_config));
+        id_key = intent.getIntExtra("id_key", 0);
 
         setData();
     }
 
     void setData(){
-        Log.d("lkgkdgnlkg", trimConfig.getWiegand().toString());
-
+        fioET.setText(memoryOperation.getKeyDataFIO(id_key));
+        keyET.setText(memoryOperation.getKeyDataKey(id_key));
     }
 
     void setListeners() {
         saveButtonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                memoryOperation.setKeyDataFio(id_key, fioET.getText().toString());
+                memoryOperation.setKeyDataKey(id_key, keyET.getText().toString());
                 finish();
             }
         });
@@ -75,27 +55,10 @@ public class EditKeyActivity extends AppCompatActivity implements IEditKeyView {
         });
     }
 
-    private boolean intToBoolean(int input) {
-        if((input==0)||(input==1)) {
-            return input!=0;
-        }
-        return true;
-    }
-
-    String addingLeadingZeros(String text){
-        while(text.length() != 5){
-            text = "0" + text;
-        }
-        return text;
-    }
-
-    String boolToString(Boolean b) {
-        return String.valueOf(b.compareTo(false));
-    }
-
     void initUI() {
         saveButtonCV = findViewById(R.id.cv_save_button);
-        nameConfigET = findViewById(R.id.et_name_config);
+        fioET = findViewById(R.id.et_fio);
+        keyET = findViewById(R.id.et_key);
         closeButtonCV = findViewById(R.id.cv_close_button);
 
         memoryOperation = new MemoryOperation(this);
@@ -103,12 +66,10 @@ public class EditKeyActivity extends AppCompatActivity implements IEditKeyView {
 
     @Override
     public void setFio(String text) {
-
     }
 
     @Override
     public void setKey(String text) {
-
     }
 
     @Override

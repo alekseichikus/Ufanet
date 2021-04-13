@@ -1,69 +1,60 @@
 package com.example.ufanet.Adapter;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.ufanet.R;
-import com.example.ufanet.configList.ConfigListActivity;
-import com.example.ufanet.configList.ControlConfigListDialogFragment;
 import com.example.ufanet.configList.IConfigListView;
-import com.example.ufanet.keyss.IKeyListView;
-import com.example.ufanet.settings.IKey;
-import com.example.ufanet.settings.SettingActivity;
 import com.example.ufanet.templates.TrimConfig;
 
 import java.util.ArrayList;
 
-
-public class ConfigListAdapter extends RecyclerView.Adapter<ConfigListAdapter.CustomViewHolder>{
+public class ConfigListAdapter extends RecyclerView.Adapter<ConfigListAdapter.CustomViewHolder> {
 
     public ArrayList<TrimConfig> items;
-    private IConfigListView keyListView;
+    private IConfigListView iConfigListView;
 
-    public ConfigListAdapter(IConfigListView keyListView, ArrayList<TrimConfig> items) {
+    public ConfigListAdapter(IConfigListView iConfigListView, ArrayList<TrimConfig> items) {
         super();
         this.items = items;
-        this.keyListView = keyListView;
+        this.iConfigListView = iConfigListView;
     }
 
     @NonNull
     @Override
     public ConfigListAdapter.CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ConfigListAdapter.CustomViewHolder(LayoutInflater.from(keyListView.getContext()).inflate(R.layout.row_config, parent, false));
+        return new ConfigListAdapter.CustomViewHolder(LayoutInflater.from(iConfigListView.getContext()).inflate(R.layout.row_config, parent, false));
     }
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
-        TextView fio;
-        TextView key;
+        TextView fioTV;
+        TextView keyTV;
         View view;
+
         public CustomViewHolder(View view) {
             super(view);
-            fio = (TextView) view.findViewById(R.id.fio);
-            key = (TextView) view.findViewById(R.id.key);
+            fioTV = (TextView) view.findViewById(R.id.fio);
+            keyTV = (TextView) view.findViewById(R.id.key);
             this.view = view;
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull ConfigListAdapter.CustomViewHolder holder, int position) {
-        holder.fio.setText(items.get(position).getNameConfig());
-        //holder.key.setText(items.get(position).getKeyBytes());
+        holder.fioTV.setText(items.get(position).getNameConfig());
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                keyListView.startEditConfig(position);
+                iConfigListView.startEditConfig(position);
             }
         });
         holder.view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                keyListView.startControlConfigDialogFragment(position);
+                iConfigListView.startControlConfigDialogFragment(position);
                 return true;
             }
         });

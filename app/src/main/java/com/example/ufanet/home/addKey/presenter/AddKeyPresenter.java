@@ -1,14 +1,10 @@
 package com.example.ufanet.home.addKey.presenter;
 
-import com.example.ufanet.edit.IEditView;
-import com.example.ufanet.edit.model.EditModel;
-import com.example.ufanet.edit.model.IEditModel;
-import com.example.ufanet.edit.presenter.IEditPresenter;
+import android.util.Log;
 import com.example.ufanet.home.addKey.IAddKeyView;
 import com.example.ufanet.home.addKey.model.AddKeyModel;
 import com.example.ufanet.home.addKey.model.IAddKeyModel;
 import com.example.ufanet.settings.IKey;
-
 import java.util.ArrayList;
 
 public class AddKeyPresenter implements IAddKeyPresenter, AddKeyModel.OnFinishedListener {
@@ -22,22 +18,11 @@ public class AddKeyPresenter implements IAddKeyPresenter, AddKeyModel.OnFinished
     }
 
     @Override
-    public void onFinished(String keys) {
+    public void onFinished() {
         if (view != null) {
-            view.onResponse("Конфиг перезаписан, перезагружаюсь");
+            view.onResponse("Ключ юыл добавлен");
             view.closeView();
         }
-    }
-
-    int boolToInt(Boolean b) {
-        return b.compareTo(false);
-    }
-
-    private boolean intToBoolean(int input) {
-        if((input==0)||(input==1)) {
-            return input!=0;
-        }
-        return true;
     }
 
     @Override
@@ -62,11 +47,6 @@ public class AddKeyPresenter implements IAddKeyPresenter, AddKeyModel.OnFinished
     }
 
     @Override
-    public void onDestroy() {
-        this.view = null;
-    }
-
-    @Override
     public void requestEditConfig() {
         if (view != null) {
             if(isFioValid(view.getFio())){
@@ -74,7 +54,7 @@ public class AddKeyPresenter implements IAddKeyPresenter, AddKeyModel.OnFinished
                     String keys_for_request = "";
                     ArrayList<IKey> keys = view.getMemoryOperation().getKeyList();
                     for (int i = 0; i < keys.size(); i++) {
-                        keys_for_request += view.getMemoryOperation().getKeyDataKey(i) + "," + view.getMemoryOperation().getKeyDataFIO(i) + "," + view.getMemoryOperation().getKeyDataType(i) + "\n";
+                        keys_for_request += view.getMemoryOperation().getKeyDataKey(i) + ",\"" + view.getMemoryOperation().getKeyDataFIO(i) + "\"," + view.getMemoryOperation().getKeyDataType(i) + "\n";
                     }
                     model.sendKeys(this, keys_for_request);
                 }

@@ -43,6 +43,11 @@
                 android:textColor="#313435"
                 android:text="Мои конфиги"/>
         </LinearLayout>
+
+        <include
+            layout="@layout/layout_empty_list"
+            android:id="@+id/l_empty_list"/>
+
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="fill_parent"

@@ -4,29 +4,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
+import android.widget.RelativeLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.ufanet.Adapter.ConfigListAdapter;
 import com.example.ufanet.R;
 import com.example.ufanet.editConfig.EditConfigActivity;
-import com.example.ufanet.keyss.ChangeKeyBottomDialogFragment;
-import com.example.ufanet.settings.IKey;
-import com.example.ufanet.settings.presenter.ISettingPresenter;
 import com.example.ufanet.templates.TrimConfig;
 import com.example.ufanet.utils.MemoryOperation;
-
 import java.util.ArrayList;
 
 public class ConfigListActivity extends AppCompatActivity implements IConfigListView {
 
     CardView closeButtonCV;
-    ConfigListAdapter adapter;
-    ArrayList<TrimConfig> key_items = new ArrayList<>();
-    RecyclerView listView;
+    ConfigListAdapter configListAdapter;
+    ArrayList<TrimConfig> items = new ArrayList<>();
+    RecyclerView containerRV;
+    RelativeLayout emptyListRL;
 
     MemoryOperation memoryOperation;
 
@@ -34,21 +30,35 @@ public class ConfigListActivity extends AppCompatActivity implements IConfigList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config_list);
+
+        memoryOperation = new MemoryOperation(this);
+
         initUI();
         setListeners();
 
-        listView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        listView.setAdapter(adapter);
+        if(isItemsConfigListArray()){
+            hideEmptyView();
+        }
+        else{
+            showEmptyView();
+        }
+    }
 
-        key_items.addAll(memoryOperation.getConfigList());
-        adapter.notifyDataSetChanged();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        items.clear();
+        items.addAll(memoryOperation.getConfigList());
+        configListAdapter.notifyDataSetChanged();
     }
 
     void initUI(){
         closeButtonCV = findViewById(R.id.cv_close_button);
-        adapter = new ConfigListAdapter( ConfigListActivity.this, key_items);
-        listView = findViewById(R.id.list);
-        memoryOperation = new MemoryOperation(this);
+        emptyListRL = findViewById(R.id.l_empty_list);
+        configListAdapter = new ConfigListAdapter( ConfigListActivity.this, items);
+        containerRV = findViewById(R.id.list);
+        containerRV.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        containerRV.setAdapter(configListAdapter);
     }
 
     void setListeners(){
@@ -60,16 +70,25 @@ public class ConfigListActivity extends AppCompatActivity implements IConfigList
         });
     }
 
-    @Override
-    public void onResponse(String string) {
+    private Boolean isItemsConfigListArray(){
+        if(memoryOperation.getConfigsArraySize()>0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
+    private void showEmptyView(){
+        emptyListRL.setVisibility(View.VISIBLE);
+    }
+
+    private void hideEmptyView(){
+        emptyListRL.setVisibility(View.GONE);
     }
 
     @Override
-    public void showFragmentSettings(IKey key) {
-        ChangeKeyBottomDialogFragment addPhotoBottomDialogFragment =
-                new ChangeKeyBottomDialogFragment(key);
-        addPhotoBottomDialogFragment.show(getSupportFragmentManager(), "change_key_fragment");
+    public void onResponse(String string) {
     }
 
     @Override
@@ -79,17 +98,10 @@ public class ConfigListActivity extends AppCompatActivity implements IConfigList
 
     @Override
     public void onResponseFailure(Throwable throwable) {
-
-    }
-
-    @Override
-    public ISettingPresenter getPresenter() {
-        return null;
     }
 
     @Override
     public void closeView() {
-
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.example.ufanet.addConfig;
 
-import com.example.ufanet.edit.presenter.IEditPresenter;
 import com.example.ufanet.utils.MemoryOperation;
 
 public interface IAddConfigView {

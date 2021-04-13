@@ -3,7 +3,9 @@ package com.example.ufanet.keyss;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -28,6 +30,7 @@ public class KeyListActivity extends AppCompatActivity implements IKeyListView{
     ArrayList<IKey> key_items = new ArrayList<>();
     RecyclerView listView;
     MemoryOperation memoryOperation;
+    RelativeLayout emptyListRL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,17 +41,49 @@ public class KeyListActivity extends AppCompatActivity implements IKeyListView{
 
         listView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         listView.setAdapter(adapter);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateData();
+    }
+
+    void updateData(){
+        key_items.clear();
         key_items.addAll(memoryOperation.getKeyList());
         adapter.notifyDataSetChanged();
+        if(isItemsKeyListArray()){
+            hideEmptyView();
+        }
+        else{
+            showEmptyView();
+        }
+    }
+
+    private void showEmptyView(){
+        emptyListRL.setVisibility(View.VISIBLE);
+    }
+
+    private void hideEmptyView(){
+        emptyListRL.setVisibility(View.GONE);
+    }
+
+    private Boolean isItemsKeyListArray(){
+        if(memoryOperation.getKeyArraySize()>0){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     void initUI(){
         closeButtonCV = findViewById(R.id.cv_close_button);
+        emptyListRL = findViewById(R.id.l_empty_list);
         adapter = new KeyListAdapter( KeyListActivity.this, key_items);
         listView = findViewById(R.id.list);
         memoryOperation = new MemoryOperation(this);
-
     }
 
     void setListeners(){
@@ -62,7 +97,6 @@ public class KeyListActivity extends AppCompatActivity implements IKeyListView{
 
     @Override
     public void onResponse(String string) {
-
     }
 
     @Override
@@ -93,7 +127,6 @@ public class KeyListActivity extends AppCompatActivity implements IKeyListView{
 
     @Override
     public void onResponseFailure(Throwable throwable) {
-
     }
 
     @Override
@@ -103,6 +136,5 @@ public class KeyListActivity extends AppCompatActivity implements IKeyListView{
 
     @Override
     public void closeView() {
-
     }
 }

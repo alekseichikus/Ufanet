@@ -33,7 +33,7 @@
         </androidx.cardview.widget.CardView>
         <LinearLayout
             android:layout_toRightOf="@+id/image_block"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:orientation="vertical">
@@ -45,7 +45,7 @@
                 android:layout_gravity="center_vertical"
                 android:textColor="#202020"
                 android:text="Мокшанцев Алексей"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -59,7 +59,7 @@
                     android:layout_gravity="center_vertical"
                     android:textColor="#a1a4a5"
                     android:text="Студент"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>
 

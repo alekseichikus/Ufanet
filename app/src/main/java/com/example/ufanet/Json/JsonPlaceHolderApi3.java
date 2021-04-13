@@ -1,10 +1,7 @@
 package com.example.ufanet.Json;
 
-import com.example.ufanet.templates.Config;
 import com.example.ufanet.templates.ResponseCode;
-
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 

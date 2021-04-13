@@ -9,7 +9,6 @@ import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,14 +20,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-
 import com.example.ufanet.R;
-import com.example.ufanet.templates.TrimConfig;
 import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -57,11 +53,8 @@ public class homeFragments extends BottomSheetDialogFragment {
     private AdvertiseData.Builder dataBuilder;
     private AdvertiseSettings.Builder settingsBuilder;
 
-    byte[] payload = {(byte)0x55,
+    byte[] tokenBeacon = {(byte)0x55,
             (byte)0x10, (byte)0x20, (byte)0x20, (byte)0x10, (byte)0x40, (byte)0x30, (byte)0x50, (byte)0x90, (byte)0x43, (byte)0x01};
-
-    public homeFragments(AppCompatActivity appCompatActivity){
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -76,13 +69,23 @@ public class homeFragments extends BottomSheetDialogFragment {
                 false);
 
         memoryOperation = new MemoryOperation(getContext());
+
+        byte[] tokenByteArray = memoryOperation.getTokenUser().getBytes();
+
+        for (int i = 1; i <= 8; i++) {
+            tokenBeacon[i] = tokenByteArray[i-1];
+        }
+
+        for (int i = 0; i < 11; i++) {
+            Log.d("gdsfdsf", String.valueOf(tokenBeacon[i]));
+        }
+
         vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 
         initUI();
         setListeners();
         initRunnable();
 
-        //TrimConfig trimConfig = new TrimConfig("a", (char) 65507);
         return view;
     }
 
@@ -95,7 +98,7 @@ public class homeFragments extends BottomSheetDialogFragment {
         settingButton = view.findViewById(R.id.cv_setting_button);
 
         dataBuilder = new AdvertiseData.Builder();
-        dataBuilder.addManufacturerData(0xFFFF, payload);
+        dataBuilder.addManufacturerData(0xFFFF, tokenBeacon);
         dataBuilder.setIncludeDeviceName(true);
         settingsBuilder = new AdvertiseSettings.Builder();
 
@@ -138,7 +141,6 @@ public class homeFragments extends BottomSheetDialogFragment {
         openButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-
                 advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
                 handlerBluetooth.postDelayed(runnableBluetooth, BEACON_BLUETOOTH_DELAY);
                 addButtonContainerLayout.setBackgroundResource(R.drawable.transition_gradient_1);
@@ -185,14 +187,12 @@ public class homeFragments extends BottomSheetDialogFragment {
         }
     };
 
-
-
     private void shareText() {
         Intent share = new Intent(android.content.Intent.ACTION_SEND);
         share.setType("text/plain");
         share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        share.putExtra(Intent.EXTRA_TEXT, R.string.share_key + memoryOperation.getTokenUser());
-        String shareKeyTitle = String.valueOf(R.string.share_key_title);
+        share.putExtra(Intent.EXTRA_TEXT, "Мой ключик: " + memoryOperation.getTokenUser());
+        String shareKeyTitle = String.valueOf("Ключ");
         startActivity(Intent.createChooser(share, shareKeyTitle));
     }
 }

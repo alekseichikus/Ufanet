@@ -4,15 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
 import com.example.ufanet.settings.IKey;
 import com.example.ufanet.templates.TrimConfig;
-
 import java.io.BufferedReader;
 import java.util.ArrayList;
-
-import static com.example.ufanet.profile.profileFragments.APP_PREFERENCES_LOGIN_USER;
-import static com.example.ufanet.profile.profileFragments.APP_PREFERENCES_PASSWORD_USER;
+import static com.example.ufanet.home.AuthBottomDialogFragment.APP_PREFERENCES_LOGIN_USER;
+import static com.example.ufanet.home.AuthBottomDialogFragment.APP_PREFERENCES_PASSWORD_USER;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_ARRAY_SIZE;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_BLUETOOTH_SW;
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_CONFIG_BUTTON_SW;
@@ -344,6 +341,6 @@ public class MemoryOperation {
     }
 
     public Integer getLockTimeConfig() {
-        return sharedPreferences.getInt(APP_PREFERENCES_CONFIG_LOCK_TIME, 3000);
+        return sharedPreferences.getInt(APP_PREFERENCES_CONFIG_LOCK_TIME, 16);
     }
 }

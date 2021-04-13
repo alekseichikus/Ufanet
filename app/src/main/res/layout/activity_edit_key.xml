@@ -43,7 +43,7 @@
             android:fontFamily="@font/roboto_black"
             android:layout_gravity="center_vertical"
             android:textColor="#313435"
-            android:text="Изменение конфига"/>
+            android:text="Изменение ключа"/>
     </LinearLayout>
     <ScrollView
         android:layout_width="match_parent"
@@ -61,7 +61,7 @@
                 android:textSize="15sp"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="#616465"
-                android:text="none"/>
+                android:text="ФИО"/>
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -87,7 +87,7 @@
                         android:padding="16dp"
                         android:maxLength="64"
                         android:id="@+id/et_fio"
-                        android:text="Guk Andrey Anatolievich"
+                        android:text="none"
                         android:inputType="text"
                         android:textColor="#313435"
                         android:textColorHint="#616465"
@@ -141,7 +141,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardElevation="0dp"
-                android:id="@+id/cv_add_button"
+                android:id="@+id/cv_save_button"
                 app:cardCornerRadius="4dp"
                 android:foreground="?android:selectableItemBackground"
                 android:layout_marginLeft="16dp"

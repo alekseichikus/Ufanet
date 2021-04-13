@@ -1,13 +1,12 @@
 package com.example.ufanet.home.addKey;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-
 import com.example.ufanet.R;
 import com.example.ufanet.home.addKey.presenter.AddKeyPresenter;
 import com.example.ufanet.home.addKey.presenter.IAddKeyPresenter;
@@ -22,8 +21,6 @@ public class AddKeyActivity extends AppCompatActivity implements IAddKeyView {
     CardView closeButtonCV;
     IAddKeyPresenter addKeyPresenter;
 
-    public static Integer MAX_COUNT_CONFIG = 5;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,12 +29,6 @@ public class AddKeyActivity extends AppCompatActivity implements IAddKeyView {
         setListeners();
 
         memoryOperation = new MemoryOperation(this);
-
-        setData();
-    }
-
-    void setData(){
-
     }
 
     void setListeners() {
@@ -48,7 +39,7 @@ public class AddKeyActivity extends AppCompatActivity implements IAddKeyView {
                 memoryOperation.setKeyDataKey(memoryOperation.getKeyArraySize(), keyET.getText().toString());
                 memoryOperation.setKeyDataType(memoryOperation.getKeyArraySize(), 1);
                 memoryOperation.setKeyArraySize(memoryOperation.getKeyArraySize()+1);
-
+                Log.d("ergokhererg", String.valueOf(memoryOperation.getKeyArraySize()+1));
                 addKeyPresenter.requestEditConfig();
             }
         });

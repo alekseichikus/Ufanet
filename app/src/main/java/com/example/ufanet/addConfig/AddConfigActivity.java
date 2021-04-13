@@ -1,30 +1,21 @@
 package com.example.ufanet.addConfig;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.AdvertiseData;
-import android.bluetooth.le.AdvertiseSettings;
-import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-
 import com.example.ufanet.R;
-import com.example.ufanet.edit.IEditView;
-import com.example.ufanet.edit.presenter.EditPresenter;
-import com.example.ufanet.edit.presenter.IEditPresenter;
 import com.example.ufanet.utils.MemoryOperation;
 
 public class AddConfigActivity extends AppCompatActivity implements IAddConfigView {
 
     MemoryOperation memoryOperation;
+
     EditText nameConfigET;
+
     CardView saveButtonCV;
     CardView closeButtonCV;
 
@@ -42,6 +33,11 @@ public class AddConfigActivity extends AppCompatActivity implements IAddConfigVi
     Switch buzzerLockSW;
 
     public static Integer MAX_COUNT_CONFIG = 5;
+    public static Integer MAX_LENGTH_LOCK_TIME = 5;
+    public static Integer MAX_LENGTH_CONFIG_NAME = 128;
+    public static Integer MIN_LENGTH_CONFIG_NAME = 1;
+    public static Integer MIN_LOCK_TIME_VALUE = 1;
+    public static Integer MAX_LOCK_TIME_VALUE = 31;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,43 +47,38 @@ public class AddConfigActivity extends AppCompatActivity implements IAddConfigVi
         setListeners();
 
         memoryOperation = new MemoryOperation(this);
-
         setData();
     }
 
     void setData(){
-        nameConfigET.setText("Конфиг_" + (memoryOperation.getConfigsArraySize()+1));
-        bluetoothSW.setChecked(memoryOperation.getBluetoothSW());
-        wiegandSW.setChecked(memoryOperation.getWiegandSW());
-        dallasSW.setChecked(memoryOperation.getDallasSW());
-        gerkonSW.setChecked(memoryOperation.getGerkonSW());
-        buttonSW.setChecked(memoryOperation.getButtonSW());
-        lockSW.setChecked(memoryOperation.getLockSW());
-        lockInvertSW.setChecked(memoryOperation.getLockInvertSW());
-        //lockTimeET.setText(memoryOperation.getLockTimeConfig());
-        buzzerCaseSW.setChecked(memoryOperation.getBuzzerCaseSW());
-        buzzerGerkonSW.setChecked(memoryOperation.getBuzzerGerkonSW());
-        buzzerKeySW.setChecked(memoryOperation.getBuzzerKeySW());
-        buzzerLockSW.setChecked(memoryOperation.getBuzzerLockSW());
+        nameConfigET.setText("Конфиг_" + (getMemoryOperation().getConfigsArraySize()+1));
+        bluetoothSW.setChecked(getMemoryOperation().getBluetoothSW());
+        wiegandSW.setChecked(getMemoryOperation().getWiegandSW());
+        dallasSW.setChecked(getMemoryOperation().getDallasSW());
+        gerkonSW.setChecked(getMemoryOperation().getGerkonSW());
+        buttonSW.setChecked(getMemoryOperation().getButtonSW());
+        lockSW.setChecked(getMemoryOperation().getLockSW());
+        lockInvertSW.setChecked(getMemoryOperation().getLockInvertSW());
+        lockTimeET.setText("4");
+        buzzerCaseSW.setChecked(getMemoryOperation().getBuzzerCaseSW());
+        buzzerGerkonSW.setChecked(getMemoryOperation().getBuzzerGerkonSW());
+        buzzerKeySW.setChecked(getMemoryOperation().getBuzzerKeySW());
+        buzzerLockSW.setChecked(getMemoryOperation().getBuzzerLockSW());
     }
 
     void setListeners() {
         saveButtonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(memoryOperation.getConfigsArraySize() < MAX_COUNT_CONFIG){
-
-                    String binaryString = boolToString(isWiegand()) + boolToString(isDallas()) + boolToString(isBluetooth()) + boolToString(isGerkon()) + boolToString(isButton())
-                            + boolToString(isLock()) + boolToString(isLockInvert()) + boolToString(isBuzzerCase()) + boolToString(isBuzzerGerkon()) + boolToString(isBuzzerLock())
-                            + boolToString(isBuzzerKey()) + addingLeadingZeros(Integer.toBinaryString(getLockTime()));
-                    int number = Integer.parseInt(binaryString, 2);
-
-
-                    memoryOperation.setConfigDataWord(memoryOperation.getConfigsArraySize(), number);
-                    memoryOperation.setConfigDataName(memoryOperation.getConfigsArraySize(), getConfigName());
-                    memoryOperation.setConfigsArraySize(memoryOperation.getConfigsArraySize()+1);
-
-                    finish();
+                if(getMemoryOperation().getConfigsArraySize() < MAX_COUNT_CONFIG){
+                    if(isValidConfigName()){
+                        if(isValidLockTime()){
+                            String binaryString = getBinaryConfigString();
+                            int number = getDecConfigInt(binaryString);
+                            addNewConfig(number, getConfigName());
+                            finish();
+                        }
+                    }
                 }
             }
         });
@@ -100,8 +91,58 @@ public class AddConfigActivity extends AppCompatActivity implements IAddConfigVi
         });
     }
 
+    private Boolean isValidLockTime(){
+        if(getLockTime() <= MAX_LOCK_TIME_VALUE){
+            if(getLockTime() >= MIN_LOCK_TIME_VALUE){
+
+            }
+            else{
+                onResponse("Время срабатывания должно быть от 1 до 31");
+                return false;
+            }
+        }
+        else{
+            onResponse("Время срабатывания должно быть от 1 до 31");
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean isValidConfigName(){
+        if(getConfigName().trim().length() >= MIN_LENGTH_CONFIG_NAME){
+            if(getConfigName().length() < MAX_LENGTH_CONFIG_NAME){
+
+            }
+            else{
+                onResponse("Название конфига не должно быть больше 128 символов");
+                return false;
+            }
+        }
+        else{
+            onResponse("Название конфига не должно быть пустым");
+            return false;
+        }
+        return true;
+    }
+
+    private String getBinaryConfigString(){
+        return boolToString(isWiegand()) + boolToString(isDallas()) + boolToString(isBluetooth()) + boolToString(isGerkon()) + boolToString(isButton())
+                + boolToString(isLock()) + boolToString(isLockInvert()) + boolToString(isBuzzerCase()) + boolToString(isBuzzerGerkon()) + boolToString(isBuzzerLock())
+                + boolToString(isBuzzerKey()) + addingLeadingZeros(Integer.toBinaryString(getLockTime()));
+    }
+
+    private void addNewConfig(int number, String name){
+        memoryOperation.setConfigDataWord(memoryOperation.getConfigsArraySize(), number);
+        memoryOperation.setConfigDataName(memoryOperation.getConfigsArraySize(), name);
+        memoryOperation.setConfigsArraySize(memoryOperation.getConfigsArraySize()+1);
+    }
+
+    private int getDecConfigInt(String binaryString){
+        return Integer.parseInt(binaryString, 2);
+    }
+
     String addingLeadingZeros(String text){
-        while(text.length() != 5){
+        while(text.length() != MAX_LENGTH_LOCK_TIME){
             text = "0" + text;
         }
         return text;
@@ -113,7 +154,6 @@ public class AddConfigActivity extends AppCompatActivity implements IAddConfigVi
 
     void initUI() {
         saveButtonCV = findViewById(R.id.cv_save_button);
-
         bluetoothSW = findViewById(R.id.sw_bluetooth);
         wiegandSW = findViewById(R.id.sw_wiegand);
         nameConfigET = findViewById(R.id.et_name_config);
@@ -212,6 +252,6 @@ public class AddConfigActivity extends AppCompatActivity implements IAddConfigVi
 
     @Override
     public void onResponseFailure(Throwable throwable) {
-        Toast.makeText(this, "Произошла какая-то бяка", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Произошла какая-то бяка(ошибка)", Toast.LENGTH_SHORT).show();
     }
 }

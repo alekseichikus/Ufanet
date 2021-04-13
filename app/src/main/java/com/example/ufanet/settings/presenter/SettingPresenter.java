@@ -1,9 +1,5 @@
 package com.example.ufanet.settings.presenter;
 
-import com.example.ufanet.edit.IEditView;
-import com.example.ufanet.edit.model.EditModel;
-import com.example.ufanet.edit.model.IEditModel;
-import com.example.ufanet.edit.presenter.IEditPresenter;
 import com.example.ufanet.settings.ISettingView;
 import com.example.ufanet.settings.model.ISettingModel;
 import com.example.ufanet.settings.model.SettingModel;
@@ -29,11 +25,6 @@ public class SettingPresenter implements ISettingPresenter, SettingModel.OnFinis
         if (view != null) {
             view.onResponseFailure(t);
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        this.view = null;
     }
 
     @Override

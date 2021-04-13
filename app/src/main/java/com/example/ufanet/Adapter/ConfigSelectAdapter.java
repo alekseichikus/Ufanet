@@ -4,35 +4,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.ufanet.R;
-import com.example.ufanet.edit.IEditView;
-import com.example.ufanet.editConfig.IEditConfigView;
-import com.example.ufanet.keyss.IKeyListView;
-import com.example.ufanet.settings.IKey;
+import com.example.ufanet.edit.ILoadConfigView;
 import com.example.ufanet.templates.ConfigSelect;
-
 import java.util.ArrayList;
-
 
 public class ConfigSelectAdapter extends RecyclerView.Adapter<ConfigSelectAdapter.CustomViewHolder>{
 
     public ArrayList<ConfigSelect> items;
-    private IEditView editView;
+    private ILoadConfigView iEditView;
 
-    public ConfigSelectAdapter(IEditView editView, ArrayList<ConfigSelect> items) {
+    public ConfigSelectAdapter(ILoadConfigView iEditView, ArrayList<ConfigSelect> items) {
         super();
         this.items = items;
-        this.editView = editView;
+        this.iEditView = iEditView;
     }
 
     @NonNull
     @Override
     public ConfigSelectAdapter.CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ConfigSelectAdapter.CustomViewHolder(LayoutInflater.from(editView.getContext()).inflate(R.layout.row_config_select, parent, false));
+        return new ConfigSelectAdapter.CustomViewHolder(LayoutInflater.from(iEditView.getContext()).inflate(R.layout.row_config_select, parent, false));
     }
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
@@ -54,7 +47,7 @@ public class ConfigSelectAdapter extends RecyclerView.Adapter<ConfigSelectAdapte
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editView.startSelectConfigActivity(position);
+                iEditView.startSelectConfigActivity(position);
             }
         });
     }

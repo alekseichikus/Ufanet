@@ -1,12 +1,6 @@
 package com.example.ufanet.templates;
 
-import android.util.Log;
-
-import java.nio.ByteBuffer;
-
 public class TrimConfig {
-
-
 
     private String nameConfig;
 
@@ -24,8 +18,6 @@ public class TrimConfig {
     Integer lock_time;
     char configWord;
 
-    private Integer[] config = new Integer[8];
-
     public TrimConfig(String nameConfig, char configWord) {
 
         this.nameConfig = nameConfig;
@@ -34,9 +26,6 @@ public class TrimConfig {
         String binary_string = Integer.toBinaryString(configWord);
 
         binary_string = addingLeadingZeros(binary_string);
-        Log.d("configurr", binary_string);
-        Log.d("configurr", String.valueOf(binary_string.charAt(0)));
-        Log.d("configurr", String.valueOf(Character.getNumericValue(binary_string.charAt(0))));
 
         wiegand = Character.getNumericValue(binary_string.charAt(0));
         dallas = Character.getNumericValue(binary_string.charAt(1));
@@ -50,6 +39,7 @@ public class TrimConfig {
         buzzer_lock = Character.getNumericValue(binary_string.charAt(9));
         buzzer_key = Character.getNumericValue(binary_string.charAt(10));
 
+
         lock_time = Integer.parseInt(String.valueOf(Character.getNumericValue(binary_string.charAt(11))) + String.valueOf(Character.getNumericValue(binary_string.charAt(12))) +
                 String.valueOf(Character.getNumericValue(binary_string.charAt(13))) + String.valueOf(Character.getNumericValue(binary_string.charAt(14))) +
                 String.valueOf(Character.getNumericValue(binary_string.charAt(15))), 2);
@@ -60,10 +50,6 @@ public class TrimConfig {
             text = "0" + text;
         }
         return text;
-    }
-
-    private String toBitString(final byte val) {
-        return String.format("%8s", Integer.toBinaryString(val & 0xFF)).replace(' ', '0');
     }
 
     public String getNameConfig() {

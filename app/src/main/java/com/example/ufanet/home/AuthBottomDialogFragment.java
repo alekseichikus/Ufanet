@@ -18,11 +18,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiNetworkSpecifier;
-import android.net.wifi.WifiNetworkSuggestion;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,7 +29,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -39,15 +41,12 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
 import com.example.ufanet.R;
-import com.example.ufanet.edit.EditActivity;
 import com.example.ufanet.settings.SettingActivity;
 import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static android.app.Activity.RESULT_OK;
 import static android.content.ContentValues.TAG;
 import static android.content.Context.LOCATION_SERVICE;
 import static android.content.Context.WIFI_SERVICE;
@@ -61,6 +60,8 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     EditText loginUserET;
     EditText passwordUserET;
     View view;
+    ImageView saveButtonImageIV;
+    TextView saveButtonTextTV;
 
     Handler bluetoothHandler;
     Runnable bluetoothRunnable;
@@ -129,8 +130,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
         netId = wifiManager.addNetwork(wifiConfig);
 
-
-
         initUI();
         setListeners();
         initRunnable();
@@ -152,6 +151,8 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         saveButtonCV = view.findViewById(R.id.cv_save_button);
         loginUserET = view.findViewById(R.id.et_login);
         passwordUserET = view.findViewById(R.id.et_password);
+        saveButtonImageIV = view.findViewById(R.id.iv_loading);
+        saveButtonTextTV = view.findViewById(R.id.tv_loading);
     }
 
     void startBeacon(){
@@ -205,8 +206,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     }
 
     public void connectToWifi() {
-
-
         wifiManager.disconnect();
         wifiManager.enableNetwork(netId, true);
         wifiManager.reconnect();
@@ -269,7 +268,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                                             memoryOperation.setPasswordUser(passwordUserET.getText().toString());
 
                                             startBeacon();
-                                            Log.d("wefwef", "dwadad");
+                                            setLoadingButton();
                                             bluetoothHandler.postDelayed(bluetoothRunnable, BEACON_BLUETOOTH_DELAY);
                                             scheduleSendLocation();
                                         }
@@ -304,6 +303,20 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                 }
             }
         });
+    }
+
+    public void setLoadingButton(){
+        saveButtonImageIV.setVisibility(View.VISIBLE);
+        Animation rotationAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_infinity);
+        saveButtonImageIV.startAnimation(rotationAnimation);
+        saveButtonTextTV.setText("Пытаюсь подключиться");
+        saveButtonCV.setEnabled(false);
+    }
+
+    public void setClickableButton(){
+        saveButtonImageIV.setVisibility(View.GONE);
+        saveButtonTextTV.setText("Начать настройку");
+        saveButtonCV.setEnabled(true);
     }
 
     public void scheduleSendLocation() {
@@ -352,16 +365,13 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
             List<ScanResult> results = wifiManager.getScanResults();
             //проходимся по всем возможным точкам
             for (final ScanResult ap : results) {
-                //ищем нужную нам точку с помощью ифа, будет находить то которую вы ввели
-                Log.d("nkhnefwef", ap.SSID.toString());
                 if(ap.SSID.toString().trim().equals("SCUD")) {
-                    Log.d("kjljklkjl", ap.SSID.toString());
-                    // дальше получаем ее MAC и передаем для коннекрта, MAC получаем из результата
-                    //здесь мы уже начинаем коннектиться
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                         WifiNetworkSpecifier.Builder builder = new WifiNetworkSpecifier.Builder();
                         builder.setSsid(APP_PREFERENCES_SSID_DEVICES);
                         builder.setWpa2Passphrase(APP_PREFERENCES_PASSWORD_DEVICES);
+
+                        setClickableButton();
 
                         WifiNetworkSpecifier wifiNetworkSpecifier = builder.build();
 
@@ -377,7 +387,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                                     @Override
                                     public void onAvailable(Network network) {
                                         super.onAvailable(network);
-                                        Log.d(TAG, "onAvailable:" + network);
                                         cm.bindProcessToNetwork(network);
                                         Intent intent = new Intent(getActivity(), SettingActivity.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -391,15 +400,17 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                         wifiConfig.priority = 1;
                         wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
 
-                        //получаем ID сети и пытаемся к ней подключиться,
                         int netId = wifiManager.addNetwork(wifiConfig);
                         wifiManager.saveConfiguration();
 
-                        Log.d("ergergerger", String.valueOf(netId));
-                        //если вайфай выключен то включаем его
                         wifiManager.enableNetwork(netId, true);
-                        //если же он включен но подключен к другой сети то перегружаем вайфай.
                         wifiManager.reconnect();
+
+                        Intent intent1 = new Intent(getActivity(), SettingActivity.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent1);
+
+                        setClickableButton();
                     }
                     break;
                 }
