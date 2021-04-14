@@ -69,6 +69,9 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     Handler wifiCheckConnectionHandler;
     Runnable wifiCheckConnectionRunnable;
 
+    Handler preWifiConnectHandler;
+    Runnable preWifiConnectRunnable;
+
     WifiManager wifiManager;
 
     private BluetoothLeAdvertiser bluetoothAdvertiser;
@@ -83,7 +86,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     public static final String APP_PREFERENCES_PASSWORD_USER = "password_user";
 
     private int BEACON_BLUETOOTH_DELAY = 6000;
-    private int WIFI_CHECK_CONNECTION_DELAY = 500;
+    private int WIFI_CHECK_CONNECTION_DELAY = 2000;
     private int attempts_wifi_connect = 0;
 
     int netId;
@@ -138,7 +141,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         bluetoothManager = (BluetoothManager) getContext().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
-
         memoryOperation = new MemoryOperation(getContext());
 
         return view;
@@ -147,6 +149,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     void initUI(){
         bluetoothHandler = new Handler();
         wifiCheckConnectionHandler = new Handler();
+        preWifiConnectHandler = new Handler();
 
         saveButtonCV = view.findViewById(R.id.cv_save_button);
         loginUserET = view.findViewById(R.id.et_login);
@@ -177,7 +180,13 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         bluetoothRunnable = new Runnable() {
             public void run() {
                 stopBeacon();
-                //connectToWifi();
+                preWifiConnectHandler.postDelayed(preWifiConnectRunnable, 4000);
+            }
+        };
+
+        preWifiConnectRunnable = new Runnable() {
+            public void run() {
+                scheduleSendLocation();
             }
         };
 
@@ -270,7 +279,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                                             startBeacon();
                                             setLoadingButton();
                                             bluetoothHandler.postDelayed(bluetoothRunnable, BEACON_BLUETOOTH_DELAY);
-                                            scheduleSendLocation();
                                         }
                                         else{
                                             Toast.makeText(getContext(), "Введите пароль", Toast.LENGTH_SHORT).show();
@@ -315,6 +323,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
     public void setClickableButton(){
         saveButtonImageIV.setVisibility(View.GONE);
+        saveButtonImageIV.setVisibility(View.INVISIBLE);
         saveButtonTextTV.setText("Начать настройку");
         saveButtonCV.setEnabled(true);
     }
@@ -357,10 +366,9 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
 
     public class WifiReceiver extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context c, Intent intent) {
-
+            Log.d("received", "true");
             //сканируем вайфай точки и узнаем какие доступны
             List<ScanResult> results = wifiManager.getScanResults();
             //проходимся по всем возможным точкам
@@ -388,12 +396,12 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                                     public void onAvailable(Network network) {
                                         super.onAvailable(network);
                                         cm.bindProcessToNetwork(network);
-                                        Intent intent = new Intent(getActivity(), SettingActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                        startActivity(intent);
                                     }
                                 };
                         cm.requestNetwork(nr, networkCallback);
+                        Intent intent1 = new Intent(getActivity(), SettingActivity.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent1);
                     }
                     else{
                         wifiConfig.SSID = String.format("\"%s\"", networkSSID);
@@ -412,6 +420,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
                         setClickableButton();
                     }
+                    dismiss();
                     break;
                 }
             }
