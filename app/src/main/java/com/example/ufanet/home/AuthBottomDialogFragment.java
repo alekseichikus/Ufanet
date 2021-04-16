@@ -42,6 +42,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.example.ufanet.R;
 import com.example.ufanet.settings.SettingActivity;
+import com.example.ufanet.utils.Constants;
 import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -66,9 +67,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     Handler bluetoothHandler;
     Runnable bluetoothRunnable;
 
-    Handler wifiCheckConnectionHandler;
-    Runnable wifiCheckConnectionRunnable;
-
     Handler preWifiConnectHandler;
     Runnable preWifiConnectRunnable;
 
@@ -86,8 +84,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     public static final String APP_PREFERENCES_PASSWORD_USER = "password_user";
 
     private int BEACON_BLUETOOTH_DELAY = 6000;
-    private int WIFI_CHECK_CONNECTION_DELAY = 2000;
-    private int attempts_wifi_connect = 0;
 
     int netId;
 
@@ -122,21 +118,11 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         view = inflater.inflate(R.layout.dialog_fragment_auth, container,
                 false);
 
-        wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(WIFI_SERVICE);
-
-        wifiConfig = new WifiConfiguration();
-        wifiConfig.SSID = String.format("\"%s\"", networkSSID);
-        wifiConfig.priority = 1;
-        wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
-
-        wifiResiver = new WifiReceiver();
-
-        netId = wifiManager.addNetwork(wifiConfig);
-
         initUI();
         setListeners();
         initRunnable();
         initBluetooth();
+        initWifi();
 
         bluetoothManager = (BluetoothManager) getContext().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
@@ -148,7 +134,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
     void initUI(){
         bluetoothHandler = new Handler();
-        wifiCheckConnectionHandler = new Handler();
         preWifiConnectHandler = new Handler();
 
         saveButtonCV = view.findViewById(R.id.cv_save_button);
@@ -156,6 +141,19 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         passwordUserET = view.findViewById(R.id.et_password);
         saveButtonImageIV = view.findViewById(R.id.iv_loading);
         saveButtonTextTV = view.findViewById(R.id.tv_loading);
+    }
+
+    private void initWifi(){
+        wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(WIFI_SERVICE);
+
+        wifiConfig = new WifiConfiguration();
+        wifiConfig.SSID = String.format("\"%s\"", networkSSID);
+        wifiConfig.priority = 1;
+        wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
+
+        wifiResiver = new WifiReceiver();
+
+        netId = wifiManager.addNetwork(wifiConfig);
     }
 
     void startBeacon(){
@@ -189,37 +187,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                 scheduleSendLocation();
             }
         };
-
-        wifiCheckConnectionRunnable = new Runnable() {
-            public void run() {
-                Log.d("fweswe", wifiManager.getConnectionInfo().getSSID());
-                if(wifiManager.getConnectionInfo().getSSID().equals(String.format("\"%s\"",APP_PREFERENCES_SSID_DEVICES))){
-                    Intent intent = new Intent(getActivity(), SettingActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(intent);
-                }
-                else{
-                    if(attempts_wifi_connect < 12){
-                        attempts_wifi_connect += 1;
-
-                        wifiCheckConnectionHandler.removeCallbacks(wifiCheckConnectionRunnable);
-                        connectToWifi();
-                    }
-                    else{
-                        wifiCheckConnectionHandler.removeCallbacks(wifiCheckConnectionRunnable);
-                        Log.d("connect to " , "could not connect");
-                    }
-                }
-            }
-        };
-    }
-
-    public void connectToWifi() {
-        wifiManager.disconnect();
-        wifiManager.enableNetwork(netId, true);
-        wifiManager.reconnect();
-
-        wifiCheckConnectionHandler.postDelayed(wifiCheckConnectionRunnable, WIFI_CHECK_CONNECTION_DELAY);
     }
 
     void initBluetooth(){
@@ -329,9 +296,14 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     }
 
     public void scheduleSendLocation() {
-
         getActivity().registerReceiver(wifiResiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         wifiManager.startScan();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getActivity().unregisterReceiver(wifiResiver);
     }
 
     public boolean isGeoDisabled() {
@@ -351,7 +323,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
     }
 
     public void onResponse(String string) {
@@ -365,63 +336,55 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     }
 
 
+
     public class WifiReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context c, Intent intent) {
-            Log.d("received", "true");
-            //сканируем вайфай точки и узнаем какие доступны
-            List<ScanResult> results = wifiManager.getScanResults();
-            //проходимся по всем возможным точкам
-            for (final ScanResult ap : results) {
-                if(ap.SSID.toString().trim().equals("SCUD")) {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                        WifiNetworkSpecifier.Builder builder = new WifiNetworkSpecifier.Builder();
-                        builder.setSsid(APP_PREFERENCES_SSID_DEVICES);
-                        builder.setWpa2Passphrase(APP_PREFERENCES_PASSWORD_DEVICES);
+            if(wifiManager != null){
+                List<ScanResult> results = wifiManager.getScanResults();
+                for (final ScanResult scanResult : results) {
+                    if(scanResult.SSID.toString().trim().equals(APP_PREFERENCES_SSID_DEVICES)) {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                            WifiNetworkSpecifier.Builder builder = new WifiNetworkSpecifier.Builder();
+                            builder.setSsid(APP_PREFERENCES_SSID_DEVICES);
+                            builder.setWpa2Passphrase(APP_PREFERENCES_PASSWORD_DEVICES);
 
-                        setClickableButton();
+                            WifiNetworkSpecifier wifiNetworkSpecifier = builder.build();
 
-                        WifiNetworkSpecifier wifiNetworkSpecifier = builder.build();
+                            NetworkRequest.Builder networkRequestBuilder = new NetworkRequest.Builder();
+                            networkRequestBuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+                            networkRequestBuilder.setNetworkSpecifier(wifiNetworkSpecifier);
 
-                        NetworkRequest.Builder networkRequestBuilder1 = new NetworkRequest.Builder();
-                        networkRequestBuilder1.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
-                        networkRequestBuilder1.setNetworkSpecifier(wifiNetworkSpecifier);
+                            NetworkRequest nr = networkRequestBuilder.build();
+                            ConnectivityManager cm = (ConnectivityManager)
+                                    getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                            ConnectivityManager.NetworkCallback networkCallback = new
+                                    ConnectivityManager.NetworkCallback() {
+                                        @Override
+                                        public void onAvailable(Network network) {
+                                            super.onAvailable(network);
+                                            cm.bindProcessToNetwork(network);
+                                        }
+                                    };
+                            cm.requestNetwork(nr, networkCallback);
+                        }
+                        else{
+                            int netId = wifiManager.addNetwork(wifiConfig);
+                            wifiManager.saveConfiguration();
 
-                        NetworkRequest nr = networkRequestBuilder1.build();
-                        ConnectivityManager cm = (ConnectivityManager)
-                                getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-                        ConnectivityManager.NetworkCallback networkCallback = new
-                                ConnectivityManager.NetworkCallback() {
-                                    @Override
-                                    public void onAvailable(Network network) {
-                                        super.onAvailable(network);
-                                        cm.bindProcessToNetwork(network);
-                                    }
-                                };
-                        cm.requestNetwork(nr, networkCallback);
-                        Intent intent1 = new Intent(getActivity(), SettingActivity.class);
-                        intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(intent1);
-                    }
-                    else{
-                        wifiConfig.SSID = String.format("\"%s\"", networkSSID);
-                        wifiConfig.priority = 1;
-                        wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
-
-                        int netId = wifiManager.addNetwork(wifiConfig);
-                        wifiManager.saveConfiguration();
-
-                        wifiManager.enableNetwork(netId, true);
-                        wifiManager.reconnect();
+                            wifiManager.enableNetwork(netId, true);
+                            wifiManager.reconnect();
+                        }
 
                         Intent intent1 = new Intent(getActivity(), SettingActivity.class);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(intent1);
 
                         setClickableButton();
+
+                        dismiss();
+                        break;
                     }
-                    dismiss();
-                    break;
                 }
             }
         }
