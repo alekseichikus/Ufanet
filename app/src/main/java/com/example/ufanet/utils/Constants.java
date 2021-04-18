@@ -6,8 +6,8 @@ public class Constants {
     public static final String APP_PREFERENCES_TOKEN_USER = "token_user";
 
     public static final String APP_PREFERENCES_IP_DEVICES = "http://192.168.4.1";
-    public static final String APP_PREFERENCES_SSID_DEVICES = "SCUD";
-    public static final String APP_PREFERENCES_PASSWORD_DEVICES = "1234567890";
+    public static final String APP_PREFERENCES_SSID_DEVICES = "TP-LINK_34A1";
+    public static final String APP_PREFERENCES_PASSWORD_DEVICES = "AmerHamer1234";
 
     public static final String APP_PREFERENCES_CONFIG_BLUETOOTH_SW = "config_bluetooth_sw";
     public static final String APP_PREFERENCES_CONFIG_WIEGAND_SW = "config_wiegand_sw";

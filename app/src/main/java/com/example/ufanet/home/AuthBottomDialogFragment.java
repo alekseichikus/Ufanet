@@ -10,6 +10,7 @@ import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.IntentFilter;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.net.wifi.ScanResult;
 import android.content.BroadcastReceiver;
@@ -19,6 +20,7 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiNetworkSpecifier;
 import android.os.Build;
@@ -36,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
@@ -128,7 +131,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         bluetoothAdapter = bluetoothManager.getAdapter();
 
         memoryOperation = new MemoryOperation(getContext());
-
         return view;
     }
 
@@ -153,7 +155,10 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
         wifiResiver = new WifiReceiver();
 
-        netId = wifiManager.addNetwork(wifiConfig);
+        int netId = wifiManager.addNetwork(wifiConfig);
+        wifiManager.saveConfiguration();
+
+        wifiManager.enableNetwork(netId, true);
     }
 
     void startBeacon(){
@@ -231,7 +236,6 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                     if(isGeoDisabled()){
                         LocationManager locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
                         startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-
                     }
                     else{
                         if (bluetoothAdapter != null) {
@@ -303,7 +307,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     @Override
     public void onStop() {
         super.onStop();
-        getActivity().unregisterReceiver(wifiResiver);
+        //getActivity().unregisterReceiver(wifiResiver);
     }
 
     public boolean isGeoDisabled() {
@@ -340,6 +344,13 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     public class WifiReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context c, Intent intent) {
+            if(intent == null || intent.getExtras() == null){
+                return;
+            }
+            Log.d("broadcasr", "true");
+            ConnectivityManager cm = (ConnectivityManager)
+                    getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
             if(wifiManager != null){
                 List<ScanResult> results = wifiManager.getScanResults();
                 for (final ScanResult scanResult : results) {
@@ -356,37 +367,38 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                             networkRequestBuilder.setNetworkSpecifier(wifiNetworkSpecifier);
 
                             NetworkRequest nr = networkRequestBuilder.build();
-                            ConnectivityManager cm = (ConnectivityManager)
-                                    getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
                             ConnectivityManager.NetworkCallback networkCallback = new
                                     ConnectivityManager.NetworkCallback() {
                                         @Override
                                         public void onAvailable(Network network) {
                                             super.onAvailable(network);
                                             cm.bindProcessToNetwork(network);
+                                            Intent intent1 = new Intent(getActivity(), SettingActivity.class);
+                                            intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+                                            startActivity(intent1);
+                                            dismiss();
                                         }
                                     };
                             cm.requestNetwork(nr, networkCallback);
                         }
                         else{
-                            int netId = wifiManager.addNetwork(wifiConfig);
-                            wifiManager.saveConfiguration();
-
-                            wifiManager.enableNetwork(netId, true);
-                            wifiManager.reconnect();
+                            if(wifiManager.getConnectionInfo().getSSID().equals("\"" + APP_PREFERENCES_SSID_DEVICES + "\"")){
+                                Intent intent1 = new Intent(getActivity(), SettingActivity.class);
+                                intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                dismiss();
+                                startActivity(intent1);
+                            }
+                            else{
+                                wifiManager.reconnect();
+                                preWifiConnectHandler.postDelayed(preWifiConnectRunnable, 4000);
+                            }
                         }
-
-                        Intent intent1 = new Intent(getActivity(), SettingActivity.class);
-                        intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(intent1);
-
-                        setClickableButton();
-
-                        dismiss();
                         break;
                     }
                 }
             }
+
         }
     }
 }
