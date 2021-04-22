@@ -40,6 +40,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
@@ -74,6 +75,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     Runnable preWifiConnectRunnable;
 
     WifiManager wifiManager;
+    NetworkRequest networkRequest;
 
     private BluetoothLeAdvertiser bluetoothAdvertiser;
 
@@ -85,8 +87,13 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
     public static final String APP_PREFERENCES_LOGIN_USER = "login_user";
     public static final String APP_PREFERENCES_PASSWORD_USER = "password_user";
+    public static Integer APP_PREFERENCES_COUNT_ATTEMPTS_TO_CONNECT = 0;
 
-    private int BEACON_BLUETOOTH_DELAY = 6000;
+    private int BEACON_BLUETOOTH_DELAY = 4500;
+    private int WIFI_CONNECT_DELAY = 3000;
+    private int NUMBER_CONNECTION_ATTEMPTS = 6;
+    private Boolean isPressedButton = false;
+
 
     int netId;
 
@@ -95,6 +102,8 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
     String networkSSID = APP_PREFERENCES_SSID_DEVICES;
     String networkPass = APP_PREFERENCES_PASSWORD_DEVICES;
+
+    IntentFilter intentFilter;
 
     byte[] payload = {(byte) 0x55,
             (byte) 0x10, (byte) 0x20, (byte) 0x20, (byte) 0x10, (byte) 0x40, (byte) 0x30, (byte) 0x50, (byte) 0x90, (byte) 0x43, (byte) 0x02};
@@ -124,13 +133,18 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         initUI();
         setListeners();
         initRunnable();
-        initBluetooth();
-        initWifi();
+
+        wifiResiver = new WifiReceiver();
 
         bluetoothManager = (BluetoothManager) getContext().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
         memoryOperation = new MemoryOperation(getContext());
+
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         return view;
     }
 
@@ -153,9 +167,9 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         wifiConfig.priority = 1;
         wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
 
-        wifiResiver = new WifiReceiver();
+        //getActivity().registerReceiver(wifiResiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
-        int netId = wifiManager.addNetwork(wifiConfig);
+        netId = wifiManager.addNetwork(wifiConfig);
         wifiManager.saveConfiguration();
 
         wifiManager.enableNetwork(netId, true);
@@ -183,13 +197,15 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         bluetoothRunnable = new Runnable() {
             public void run() {
                 stopBeacon();
-                preWifiConnectHandler.postDelayed(preWifiConnectRunnable, 4000);
+                preWifiConnectHandler.postDelayed(preWifiConnectRunnable, WIFI_CONNECT_DELAY);
             }
         };
 
         preWifiConnectRunnable = new Runnable() {
             public void run() {
-                scheduleSendLocation();
+                if(getActivity() != null){
+                    scheduleSendLocation();
+                }
             }
         };
     }
@@ -222,7 +238,11 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         super.onResume();
         loginUserET.setText(memoryOperation.getLoginUser());
         passwordUserET.setText(memoryOperation.getPasswordUser());
-        getActivity().registerReceiver(wifiResiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+        try{
+            getActivity().registerReceiver(wifiResiver, intentFilter);
+        }catch (Exception e){
+        }
     }
 
     void setListeners(){
@@ -238,8 +258,10 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                         startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     }
                     else{
+                        initBluetooth();
                         if (bluetoothAdapter != null) {
                             if(bluetoothAdapter.isEnabled()){
+                                initWifi();
                                 if(wifiManager.isWifiEnabled()){
                                     Log.d("wifi is enable", "true");
                                     if(!isEmptyString(loginUserET.getText().toString())){
@@ -249,7 +271,10 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
                                             startBeacon();
                                             setLoadingButton();
+                                            isPressedButton = true;
                                             bluetoothHandler.postDelayed(bluetoothRunnable, BEACON_BLUETOOTH_DELAY);
+
+
                                         }
                                         else{
                                             Toast.makeText(getContext(), "Введите пароль", Toast.LENGTH_SHORT).show();
@@ -293,21 +318,26 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     }
 
     public void setClickableButton(){
-        saveButtonImageIV.setVisibility(View.GONE);
-        saveButtonImageIV.setVisibility(View.INVISIBLE);
         saveButtonTextTV.setText("Начать настройку");
         saveButtonCV.setEnabled(true);
+        saveButtonImageIV.clearAnimation();
+        saveButtonImageIV.setVisibility(View.GONE);
     }
 
     public void scheduleSendLocation() {
-        getActivity().registerReceiver(wifiResiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        wifiManager.startScan();
-    }
+        wifiConfig = new WifiConfiguration();
+        wifiConfig.SSID = String.format("\"%s\"", networkSSID);
+        wifiConfig.preSharedKey = String.format("\"%s\"", networkPass);
+        wifiConfig.priority = 99999;
+        netId = wifiManager.addNetwork(wifiConfig);
+        wifiManager.saveConfiguration();
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        //getActivity().unregisterReceiver(wifiResiver);
+        wifiManager.enableNetwork(netId, true);
+
+        wifiManager.startScan();
+        wifiManager.disconnect();
+        wifiManager.reconnect();
+
     }
 
     public boolean isGeoDisabled() {
@@ -336,10 +366,11 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
     @Override
     public void onPause() {
         super.onPause();
-        getActivity().unregisterReceiver(wifiResiver);
+        try{
+            getActivity().unregisterReceiver(wifiResiver);
+        }catch (Exception e){
+        }
     }
-
-
 
     public class WifiReceiver extends BroadcastReceiver {
         @Override
@@ -347,58 +378,180 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
             if(intent == null || intent.getExtras() == null){
                 return;
             }
-            Log.d("broadcasr", "true");
+
             ConnectivityManager cm = (ConnectivityManager)
                     getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-            if(wifiManager != null){
-                List<ScanResult> results = wifiManager.getScanResults();
-                for (final ScanResult scanResult : results) {
-                    if(scanResult.SSID.toString().trim().equals(APP_PREFERENCES_SSID_DEVICES)) {
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                            WifiNetworkSpecifier.Builder builder = new WifiNetworkSpecifier.Builder();
-                            builder.setSsid(APP_PREFERENCES_SSID_DEVICES);
-                            builder.setWpa2Passphrase(APP_PREFERENCES_PASSWORD_DEVICES);
+            String action = intent.getAction();
 
-                            WifiNetworkSpecifier wifiNetworkSpecifier = builder.build();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                switch (action){
+                    case WifiManager.SCAN_RESULTS_AVAILABLE_ACTION:
+                        if(!checkWifiOnAndConnected()){
+                            Log.d(getActivity().getClass().getSimpleName(), "wifi dont connect");
+                            if(getCountAttemptsToConnect() < NUMBER_CONNECTION_ATTEMPTS){
+                                preWifiConnectHandler.removeCallbacks(preWifiConnectRunnable);
+                                preWifiConnectHandler.postDelayed(preWifiConnectRunnable, WIFI_CONNECT_DELAY);
 
-                            NetworkRequest.Builder networkRequestBuilder = new NetworkRequest.Builder();
-                            networkRequestBuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
-                            networkRequestBuilder.setNetworkSpecifier(wifiNetworkSpecifier);
-
-                            NetworkRequest nr = networkRequestBuilder.build();
-                            ConnectivityManager.NetworkCallback networkCallback = new
-                                    ConnectivityManager.NetworkCallback() {
-                                        @Override
-                                        public void onAvailable(Network network) {
-                                            super.onAvailable(network);
-                                            cm.bindProcessToNetwork(network);
-                                            Intent intent1 = new Intent(getActivity(), SettingActivity.class);
-                                            intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
-                                            startActivity(intent1);
-                                            dismiss();
-                                        }
-                                    };
-                            cm.requestNetwork(nr, networkCallback);
-                        }
-                        else{
-                            if(wifiManager.getConnectionInfo().getSSID().equals("\"" + APP_PREFERENCES_SSID_DEVICES + "\"")){
-                                Intent intent1 = new Intent(getActivity(), SettingActivity.class);
-                                intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                dismiss();
-                                startActivity(intent1);
+                                setCountAttemptsToConnect(getCountAttemptsToConnect()+1);
                             }
                             else{
-                                wifiManager.reconnect();
-                                preWifiConnectHandler.postDelayed(preWifiConnectRunnable, 4000);
+                                setClickableButton();
+                                Toast.makeText(getContext(), "Не удалось подключиться", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        else{
+                            Log.d(getActivity().getClass().getSimpleName(), "wifi will be connect");
+                        }
+                        break;
+                    case WifiManager.WIFI_STATE_CHANGED_ACTION:
+                        int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
+                        if (state == WifiManager.WIFI_STATE_ENABLED) {
+                            Log.d("state", "wifi enabled");
+                        }
+                        else if (state == WifiManager.WIFI_STATE_DISABLED){
+                            Log.d("state", "wifi disabled");
+                            preWifiConnectHandler.removeCallbacks(preWifiConnectRunnable);
+                            setClickableButton();
+                        }
+                        break;
+                    case WifiManager.NETWORK_STATE_CHANGED_ACTION:
+                        NetworkInfo networkInfo =
+                                intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+                        if(networkInfo.isConnected()) {
+                            if(checkWifiOnAndConnected()){
+                                Log.d(getActivity().getClass().getSimpleName(), "wifi will be connect 2");
+                                Intent settingActivityIntent = new Intent(getActivity(), SettingActivity.class);
+                                settingActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                startActivity(settingActivityIntent);
+                                dismiss();
                             }
                         }
                         break;
-                    }
+                }
+            }
+            else{
+                switch (action){
+                    case WifiManager.SCAN_RESULTS_AVAILABLE_ACTION:
+                        if(!checkWifiOnAndConnected()){
+                            Log.d(getActivity().getClass().getSimpleName(), "wifi dont connect");
+                            if(getCountAttemptsToConnect() < NUMBER_CONNECTION_ATTEMPTS){
+                                preWifiConnectHandler.removeCallbacks(preWifiConnectRunnable);
+                                preWifiConnectHandler.postDelayed(preWifiConnectRunnable, WIFI_CONNECT_DELAY);
+
+                                setCountAttemptsToConnect(getCountAttemptsToConnect()+1);
+                            }
+                            else{
+                                setClickableButton();
+                                Toast.makeText(getContext(), "Не удалось подключиться", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        else{
+                            Log.d(getActivity().getClass().getSimpleName(), "wifi will be connect");
+                            Intent settingActivityIntent = new Intent(getActivity(), SettingActivity.class);
+                            settingActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            startActivity(settingActivityIntent);
+                            dismiss();
+                        }
+                        break;
                 }
             }
 
+
+
+
+//            if(wifiManager != null){
+//                List<ScanResult> results = wifiManager.getScanResults();
+//                Boolean is_isset_wifi = false;
+//                for (final ScanResult scanResult : results) {
+//                    if(scanResult.SSID.toString().trim().equals(APP_PREFERENCES_SSID_DEVICES)) {
+//                        is_isset_wifi = true;
+//                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+//                            ConnectivityManager.NetworkCallback networkCallback = new
+//                                    ConnectivityManager.NetworkCallback() {
+//                                        @Override
+//                                        public void onAvailable(Network network) {
+//                                            super.onAvailable(network);
+//                                            cm.bindProcessToNetwork(network);
+//                                            Intent intent1 = new Intent(getActivity(), SettingActivity.class);
+//                                            intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                                            startActivity(intent1);
+//                                            dismiss();
+//                                        }
+//                                    };
+//                            initNetworkRequest();
+//                            cm.requestNetwork(networkRequest, networkCallback);
+//                        }
+//                        else{
+//                            if(wifiManager.getConnectionInfo().getSSID().equals("\"" + APP_PREFERENCES_SSID_DEVICES + "\"")){
+//                                Intent intent1 = new Intent(getActivity(), SettingActivity.class);
+//                                intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                                startActivity(intent1);
+//                                dismiss();
+//                            }
+//                        }
+//                        break;
+//                    }
+//                }
+//                if(!is_isset_wifi){
+//                    Log.d("BroadcastReceiver", "true4");
+//                    if(getCountAttemptsToConnect() < 3){
+//                        Log.d("BroadcastReceiver", "true5");
+//                        wifiManager.reconnect();
+//                        preWifiConnectHandler.postDelayed(preWifiConnectRunnable, 4000);
+//                        setCountAttemptsToConnect(getCountAttemptsToConnect()+1);
+//                    }
+//                    else{
+//                        Log.d("BroadcastReceiver", "true6");
+//                        onResponse("Ошибка подключения к сети");
+//                        setClickableButton();
+//                        setCountAttemptsToConnect(0);
+//                    }
+//                }
+//            }
         }
+    }
+
+    private boolean checkWifiOnAndConnected() {
+        WifiManager wifiMgr = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        if (wifiMgr.isWifiEnabled()) { // Wi-Fi adapter is ON
+
+            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+
+            if( wifiInfo.getNetworkId() == -1 ){
+                return false; // Not connected to an access point
+            }
+            else if(!wifiInfo.getSSID().equals(String.format("\"%s\"", networkSSID))){
+                return false;
+            }
+            return true; // Connected to an access point
+        }
+        else {
+            return false; // Wi-Fi adapter is OFF
+        }
+    }
+
+    private Integer getCountAttemptsToConnect(){
+        return  APP_PREFERENCES_COUNT_ATTEMPTS_TO_CONNECT;
+    }
+
+    private void setCountAttemptsToConnect(Integer count){
+        APP_PREFERENCES_COUNT_ATTEMPTS_TO_CONNECT = count;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private void initNetworkRequest(){
+        WifiNetworkSpecifier.Builder builder = new WifiNetworkSpecifier.Builder();
+        builder.setSsid(APP_PREFERENCES_SSID_DEVICES);
+        builder.setWpa2Passphrase(APP_PREFERENCES_PASSWORD_DEVICES);
+
+        WifiNetworkSpecifier wifiNetworkSpecifier = builder.build();
+
+        NetworkRequest.Builder networkRequestBuilder = new NetworkRequest.Builder();
+        networkRequestBuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+        networkRequestBuilder.setNetworkSpecifier(wifiNetworkSpecifier);
+
+        networkRequest = networkRequestBuilder.build();
     }
 }

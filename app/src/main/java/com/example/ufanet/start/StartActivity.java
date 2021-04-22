@@ -47,5 +47,6 @@ public class StartActivity extends AppCompatActivity {
             Intent intent = new Intent(StartActivity.this, LogPasscodeActivity.class);
             startActivity(intent);
         }
+        finish();
     }
 }
