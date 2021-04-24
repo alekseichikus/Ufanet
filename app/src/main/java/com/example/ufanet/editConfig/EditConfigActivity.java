@@ -15,10 +15,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import com.example.ufanet.R;
+import com.example.ufanet.WifiConnectAppCompatActivity;
 import com.example.ufanet.templates.TrimConfig;
 import com.example.ufanet.utils.MemoryOperation;
 
-public class EditConfigActivity extends AppCompatActivity implements IEditConfigView {
+public class EditConfigActivity extends WifiConnectAppCompatActivity implements IEditConfigView {
 
     MemoryOperation memoryOperation;
     EditText nameConfigET;

@@ -22,7 +22,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import com.example.ufanet.R;
 import com.example.ufanet.utils.MemoryOperation;
@@ -168,8 +167,10 @@ public class homeFragments extends BottomSheetDialogFragment {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                AuthBottomDialogFragment addPhotoBottomDialogFragment =
-                        new AuthBottomDialogFragment();
+
+
+                GeoLocalRequestToPermissionDialogFragment addPhotoBottomDialogFragment =
+                        new GeoLocalRequestToPermissionDialogFragment();
                 addPhotoBottomDialogFragment.show(getFragmentManager(),
                         "auth_fragment");
             }

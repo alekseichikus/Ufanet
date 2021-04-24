@@ -1,13 +1,19 @@
 package com.example.ufanet.settings;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiNetworkSuggestion;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.cardview.widget.CardView;
 import com.example.ufanet.R;
+import com.example.ufanet.WifiConnectAppCompatActivity;
 import com.example.ufanet.addConfig.AddConfigActivity;
 import com.example.ufanet.configList.ConfigListActivity;
 import com.example.ufanet.edit.LoadConfigActivity;
@@ -15,8 +21,15 @@ import com.example.ufanet.home.addKey.AddKeyActivity;
 import com.example.ufanet.keyss.KeyListActivity;
 import com.example.ufanet.settings.presenter.ISettingPresenter;
 import com.example.ufanet.settings.presenter.SettingPresenter;
+import com.example.ufanet.utils.MemoryOperation;
 
-public class SettingActivity extends AppCompatActivity implements ISettingView {
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.ufanet.utils.Constants.APP_PREFERENCES_PASSWORD_DEVICES;
+import static com.example.ufanet.utils.Constants.APP_PREFERENCES_SSID_DEVICES;
+
+public class SettingActivity extends WifiConnectAppCompatActivity implements ISettingView {
 
     CardView settingButtonCV;
     CardView reloadButtonCV;
@@ -27,9 +40,9 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
     CardView addConfigButtonCV;
     CardView configListButtonCV;
 
-    final String FILENAME = "file";
-
     ISettingPresenter presenter;
+
+    MemoryOperation memoryOperation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +52,22 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
         setListeners();
 
         presenter = new SettingPresenter(this);
+
+        memoryOperation = new MemoryOperation(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        if(wifiManager != null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // ???
+            }
+            else{
+                wifiManager.disconnect();
+            }
+        }
     }
 
     void initUI(){
@@ -57,7 +86,7 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
             public void onClick(View v) {
                 Intent intent = new Intent(SettingActivity.this, LoadConfigActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -65,7 +94,7 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
             public void onClick(View v) {
                 Intent intent = new Intent(SettingActivity.this, KeyListActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -73,7 +102,7 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
             public void onClick(View v) {
                 Intent intent = new Intent(SettingActivity.this, AddConfigActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -81,7 +110,7 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
             public void onClick(View v) {
                 Intent intent = new Intent(SettingActivity.this, ConfigListActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -98,7 +127,7 @@ public class SettingActivity extends AppCompatActivity implements ISettingView {
             public void onClick(View v) {
                 Intent intent = new Intent(SettingActivity.this, AddKeyActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
             }
         });
 

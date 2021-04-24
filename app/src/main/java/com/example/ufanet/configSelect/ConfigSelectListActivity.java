@@ -12,11 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.ufanet.Adapter.ConfigSelectListAdapter;
 import com.example.ufanet.R;
+import com.example.ufanet.WifiConnectAppCompatActivity;
 import com.example.ufanet.templates.TrimConfig;
 import com.example.ufanet.utils.MemoryOperation;
 import java.util.ArrayList;
 
-public class ConfigSelectListActivity extends AppCompatActivity implements IConfigSelectListView {
+public class ConfigSelectListActivity extends WifiConnectAppCompatActivity implements IConfigSelectListView {
 
     CardView closeButtonCV;
     ConfigSelectListAdapter configSelectListAdapter;

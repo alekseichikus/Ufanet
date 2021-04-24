@@ -5,18 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.ufanet.Adapter.ConfigListAdapter;
 import com.example.ufanet.R;
+import com.example.ufanet.WifiConnectAppCompatActivity;
 import com.example.ufanet.editConfig.EditConfigActivity;
 import com.example.ufanet.templates.TrimConfig;
 import com.example.ufanet.utils.MemoryOperation;
 import java.util.ArrayList;
 
-public class ConfigListActivity extends AppCompatActivity implements IConfigListView {
+public class ConfigListActivity extends WifiConnectAppCompatActivity implements IConfigListView {
 
     CardView closeButtonCV;
     ConfigListAdapter configListAdapter;
@@ -109,7 +110,7 @@ public class ConfigListActivity extends AppCompatActivity implements IConfigList
         Intent intent = new Intent(this, EditConfigActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.putExtra("id_config", id_config);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
     }
 
     @Override

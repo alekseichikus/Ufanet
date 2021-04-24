@@ -8,12 +8,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.ufanet.Adapter.ConfigSelectAdapter;
 import com.example.ufanet.R;
+import com.example.ufanet.WifiConnectAppCompatActivity;
 import com.example.ufanet.configSelect.ConfigSelectListActivity;
 import com.example.ufanet.edit.presenter.LoadConfigPresenter;
 import com.example.ufanet.edit.presenter.ILoadConfigPresenter;
@@ -21,7 +21,7 @@ import com.example.ufanet.templates.ConfigSelect;
 import com.example.ufanet.utils.MemoryOperation;
 import java.util.ArrayList;
 
-public class LoadConfigActivity extends AppCompatActivity implements ILoadConfigView {
+public class LoadConfigActivity extends WifiConnectAppCompatActivity implements ILoadConfigView {
 
     MemoryOperation memoryOperation;
     EditText loginUserET;

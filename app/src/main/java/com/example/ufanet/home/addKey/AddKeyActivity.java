@@ -1,18 +1,18 @@
 package com.example.ufanet.home.addKey;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.cardview.widget.CardView;
 import com.example.ufanet.R;
+import com.example.ufanet.WifiConnectAppCompatActivity;
 import com.example.ufanet.home.addKey.presenter.AddKeyPresenter;
 import com.example.ufanet.home.addKey.presenter.IAddKeyPresenter;
 import com.example.ufanet.utils.MemoryOperation;
 
-public class AddKeyActivity extends AppCompatActivity implements IAddKeyView {
+public class AddKeyActivity extends WifiConnectAppCompatActivity implements IAddKeyView {
 
     MemoryOperation memoryOperation;
     EditText fioET;
@@ -39,7 +39,6 @@ public class AddKeyActivity extends AppCompatActivity implements IAddKeyView {
                 memoryOperation.setKeyDataKey(memoryOperation.getKeyArraySize(), keyET.getText().toString());
                 memoryOperation.setKeyDataType(memoryOperation.getKeyArraySize(), 1);
                 memoryOperation.setKeyArraySize(memoryOperation.getKeyArraySize()+1);
-                Log.d("ergokhererg", String.valueOf(memoryOperation.getKeyArraySize()+1));
                 addKeyPresenter.requestEditConfig();
             }
         });

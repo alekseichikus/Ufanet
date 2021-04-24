@@ -2,15 +2,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_home_r"
-        android:title="Главная"
-        app:cnb_iconColor="#744fc0"/>
-
-    <item
-        android:id="@+id/navigation_note"
-        android:icon="@drawable/ic_cogs_r"
-        app:cnb_iconColor="#2196f1"
-        android:title="Настройки"/>
 </menu>

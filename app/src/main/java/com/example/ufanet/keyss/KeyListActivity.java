@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ufanet.Adapter.KeyListAdapter;
 import com.example.ufanet.R;
+import com.example.ufanet.WifiConnectAppCompatActivity;
 import com.example.ufanet.configList.ControlConfigListDialogFragment;
 import com.example.ufanet.editConfig.EditConfigActivity;
 import com.example.ufanet.editKey.EditKeyActivity;
@@ -23,7 +24,7 @@ import com.example.ufanet.utils.MemoryOperation;
 
 import java.util.ArrayList;
 
-public class KeyListActivity extends AppCompatActivity implements IKeyListView{
+public class KeyListActivity extends WifiConnectAppCompatActivity implements IKeyListView{
 
     CardView closeButtonCV;
     KeyListAdapter adapter;
