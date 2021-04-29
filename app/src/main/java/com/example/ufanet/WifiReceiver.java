@@ -168,7 +168,7 @@ public class WifiReceiver extends BroadcastReceiver {
                 return false; // Not connected to an access point
             }
 
-            if(!wifiInfo.getSSID().equals(String.format("\"%s\"", "SCUD"))){
+            if(!wifiInfo.getSSID().equals(String.format("\"%s\"", fragment.getSSIDDeviceET()))){
                 return false;
             }
             return true; // Connected to an access point
@@ -178,11 +178,11 @@ public class WifiReceiver extends BroadcastReceiver {
         }
     }
 
-    private Integer getCountAttemptsToConnect(){
+    public Integer getCountAttemptsToConnect(){
         return  APP_PREFERENCES_COUNT_ATTEMPTS_TO_CONNECT;
     }
 
-    private void setCountAttemptsToConnect(Integer count){
+    public void setCountAttemptsToConnect(Integer count){
         APP_PREFERENCES_COUNT_ATTEMPTS_TO_CONNECT = count;
     }
 
@@ -196,8 +196,8 @@ public class WifiReceiver extends BroadcastReceiver {
     public void scheduleSendLocation() {
         if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q){
             builder = new WifiNetworkSpecifier.Builder();
-            builder.setSsid(fragment.getMemoryOperation().getLoginUser());
-            builder.setWpa2Passphrase(fragment.getMemoryOperation().getPasswordUser());
+            builder.setSsid(fragment.getSSIDDeviceET());
+            builder.setWpa2Passphrase(fragment.getPasswordDeviceET());
             wifiNetworkSpecifier = builder.build();
             networkRequestBuilder = new NetworkRequest.Builder();
             networkRequestBuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
@@ -218,8 +218,8 @@ public class WifiReceiver extends BroadcastReceiver {
         }
         else{
             wifiConfig = new WifiConfiguration();
-            wifiConfig.SSID = String.format("\"%s\"", fragment.getMemoryOperation().getLoginUser());
-            wifiConfig.preSharedKey = String.format("\"%s\"", fragment.getMemoryOperation().getPasswordUser());
+            wifiConfig.SSID = String.format("\"%s\"", fragment.getSSIDDeviceET());
+            wifiConfig.preSharedKey = String.format("\"%s\"", fragment.getPasswordDeviceET());
             wifiConfig.priority = 99999;
             netId = wifiManager.addNetwork(wifiConfig);
             wifiManager.saveConfiguration();

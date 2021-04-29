@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.example.ufanet.home.AuthBottomDialogFragment;
+import com.example.ufanet.home.homeFragments;
+import com.example.ufanet.utils.MemoryOperation;
 
 public class BeaconBluetooth {
 
@@ -27,8 +29,10 @@ public class BeaconBluetooth {
 
     private int BEACON_BLUETOOTH_DELAY = 4500;
 
+    MemoryOperation memoryOperation;
+
     byte[] payload = {(byte) 0x55,
-            (byte) 0x10, (byte) 0x20, (byte) 0x20, (byte) 0x10, (byte) 0x40, (byte) 0x30, (byte) 0x50, (byte) 0x90, (byte) 0x43, (byte) 0x02};
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02};
 
     AuthBottomDialogFragment fragment;
 
@@ -38,12 +42,20 @@ public class BeaconBluetooth {
         bluetoothManager = (BluetoothManager) fragment.getContext().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
+        memoryOperation = new MemoryOperation(fragment.getContext());
+
         bluetoothRunnable = new Runnable() {
             public void run() {
                 stopBeacon();
                 fragment.wifiResiver.startHandler();
             }
         };
+
+        byte[] tokenByteArray = homeFragments.hexStringToByteArray(memoryOperation.getTokenUser());
+
+        for (int i = 1; i < 9; i++) {
+            payload[i] = tokenByteArray[i-1];
+        }
     }
     public void initBluetooth(){
         dataBuilder = new AdvertiseData.Builder();

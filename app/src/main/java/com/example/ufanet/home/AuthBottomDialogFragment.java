@@ -103,6 +103,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
         }catch (Exception e){
         }
 
+        wifiResiver.setCountAttemptsToConnect(0);
         setClickableButton();
     }
 
@@ -150,6 +151,14 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
 
     public void setSSIDDeviceET(){
         loginUserET.setText(memoryOperation.getLoginUser());
+    }
+
+    public String getSSIDDeviceET(){
+        return loginUserET.getText().toString();
+    }
+
+    public String getPasswordDeviceET(){
+        return passwordUserET.getText().toString();
     }
 
     public void setPasswordDeviceET(){

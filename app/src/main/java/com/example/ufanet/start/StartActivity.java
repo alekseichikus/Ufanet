@@ -23,7 +23,7 @@ public class StartActivity extends AppCompatActivity {
         memoryOperation = new MemoryOperation(this);
 
         if(memoryOperation.getTokenUser().isEmpty()){
-            String alphabet = "1234567890ABCDEF";
+            String alphabet = "1234567890abcdef";
             StringBuilder sb = new StringBuilder();
             Random random = new Random();
             int length = 16;

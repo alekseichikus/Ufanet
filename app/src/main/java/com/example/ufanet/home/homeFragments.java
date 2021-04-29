@@ -52,8 +52,7 @@ public class homeFragments extends BottomSheetDialogFragment {
     private AdvertiseData.Builder dataBuilder;
     private AdvertiseSettings.Builder settingsBuilder;
 
-    byte[] tokenBeacon = {(byte)0x55,
-            (byte)0x10, (byte)0x20, (byte)0x20, (byte)0x10, (byte)0x40, (byte)0x30, (byte)0x50, (byte)0x90, (byte)0x43, (byte)0x01};
+    byte[] tokenBeacon = {(byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0};
 
     @Override
     public void onAttach(Context context) {
@@ -69,14 +68,10 @@ public class homeFragments extends BottomSheetDialogFragment {
 
         memoryOperation = new MemoryOperation(getContext());
 
-        byte[] tokenByteArray = memoryOperation.getTokenUser().getBytes();
+        byte[] tokenByteArray = hexStringToByteArray(memoryOperation.getTokenUser());
 
-        for (int i = 1; i <= 8; i++) {
-            tokenBeacon[i] = tokenByteArray[i-1];
-        }
-
-        for (int i = 0; i < 11; i++) {
-            Log.d("gdsfdsf", String.valueOf(tokenBeacon[i]));
+        for (int i = 0; i < 8; i++) {
+            tokenBeacon[i] = tokenByteArray[i];
         }
 
         vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -88,6 +83,17 @@ public class homeFragments extends BottomSheetDialogFragment {
         return view;
     }
 
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len/2];
+
+        for(int i = 0; i < len; i+=2){
+            data[i/2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i+1), 16));
+        }
+
+        return data;
+    }
+
     private void initUI(){
         addButtonContainerLayout = view.findViewById(R.id.add_button_container);
         circleLinearLayout = view.findViewById(R.id.circle_container);
@@ -97,6 +103,7 @@ public class homeFragments extends BottomSheetDialogFragment {
         settingButton = view.findViewById(R.id.cv_setting_button);
 
         dataBuilder = new AdvertiseData.Builder();
+        Log.d("button_key", new String(tokenBeacon));
         dataBuilder.addManufacturerData(0xFFFF, tokenBeacon);
         dataBuilder.setIncludeDeviceName(true);
         settingsBuilder = new AdvertiseSettings.Builder();
@@ -140,19 +147,26 @@ public class homeFragments extends BottomSheetDialogFragment {
         openButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
-                handlerBluetooth.postDelayed(runnableBluetooth, BEACON_BLUETOOTH_DELAY);
-                addButtonContainerLayout.setBackgroundResource(R.drawable.transition_gradient_1);
-                AnimationDrawable animationDrawable = (AnimationDrawable) addButtonContainerLayout.getBackground();
-                animationDrawable.setEnterFadeDuration(300);
-                animationDrawable.setExitFadeDuration(300);
-                animationDrawable.start();
+                if(AuthBottomDialogFragment.isBluetoothEnabled()){
+                    advertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
+                    advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
+                    handlerBluetooth.postDelayed(runnableBluetooth, BEACON_BLUETOOTH_DELAY);
+                    addButtonContainerLayout.setBackgroundResource(R.drawable.transition_gradient_1);
+                    AnimationDrawable animationDrawable = (AnimationDrawable) addButtonContainerLayout.getBackground();
+                    animationDrawable.setEnterFadeDuration(300);
+                    animationDrawable.setExitFadeDuration(300);
+                    animationDrawable.start();
 
-                circleImageView.setImageResource(R.drawable.ic_lock_open_alt);
-                openButton.setEnabled(false);
-                circleLinearLayout.requestLayout();
-                vibrator.vibrate(200);
-                Toast.makeText(getContext(), R.string.open_door_beacon, Toast.LENGTH_LONG).show();
+                    circleImageView.setImageResource(R.drawable.ic_lock_open_alt);
+                    openButton.setEnabled(false);
+                    circleLinearLayout.requestLayout();
+                    vibrator.vibrate(200);
+                    Toast.makeText(getContext(), R.string.open_door_beacon, Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivity(intent);
+                }
             }
         });
 
