@@ -52,7 +52,7 @@ public class homeFragments extends BottomSheetDialogFragment {
     private AdvertiseData.Builder dataBuilder;
     private AdvertiseSettings.Builder settingsBuilder;
 
-    byte[] tokenBeacon = {(byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0};
+    byte[] tokenBeacon = {(byte) 0x55, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0};
 
     @Override
     public void onAttach(Context context) {
@@ -70,8 +70,8 @@ public class homeFragments extends BottomSheetDialogFragment {
 
         byte[] tokenByteArray = hexStringToByteArray(memoryOperation.getTokenUser());
 
-        for (int i = 0; i < 8; i++) {
-            tokenBeacon[i] = tokenByteArray[i];
+        for (int i = 1; i <= 8; i++) {
+            tokenBeacon[i] = tokenByteArray[i-1];
         }
 
         vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);

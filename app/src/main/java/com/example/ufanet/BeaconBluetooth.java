@@ -32,7 +32,7 @@ public class BeaconBluetooth {
     MemoryOperation memoryOperation;
 
     byte[] payload = {(byte) 0x55,
-            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02};
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x43, (byte) 0x02};
 
     AuthBottomDialogFragment fragment;
 
