@@ -23,7 +23,10 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
+
+import com.example.ufanet.MainActivity;
 import com.example.ufanet.R;
+import com.example.ufanet.passwordActivity.LogPasscodeActivity;
 import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -140,7 +143,11 @@ public class homeFragments extends BottomSheetDialogFragment {
         shareCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                shareText();
+                myKeyDialogFragment fragment =
+                        new myKeyDialogFragment();
+                fragment.show(getFragmentManager(),
+                        "auth_fragment");
+                //shareText();
             }
         });
 
@@ -173,7 +180,11 @@ public class homeFragments extends BottomSheetDialogFragment {
         settingButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                shareText();
+                myKeyDialogFragment fragment =
+                        new myKeyDialogFragment();
+                fragment.show(getFragmentManager(),
+                        "auth_fragment");
+                //shareText();
             }
         });
 
@@ -181,12 +192,13 @@ public class homeFragments extends BottomSheetDialogFragment {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-
-
-                GeoLocalRequestToPermissionDialogFragment addPhotoBottomDialogFragment =
-                        new GeoLocalRequestToPermissionDialogFragment();
-                addPhotoBottomDialogFragment.show(getFragmentManager(),
-                        "auth_fragment");
+                Intent intent = new Intent(getContext(), PermActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+//                GeoLocalRequestToPermissionDialogFragment addPhotoBottomDialogFragment =
+//                        new GeoLocalRequestToPermissionDialogFragment();
+//                addPhotoBottomDialogFragment.show(getFragmentManager(),
+//                        "auth_fragment");
             }
         });
     }
@@ -201,13 +213,4 @@ public class homeFragments extends BottomSheetDialogFragment {
             Log.i("TAG", "Advertisement start succeeded.");
         }
     };
-
-    private void shareText() {
-        Intent share = new Intent(android.content.Intent.ACTION_SEND);
-        share.setType("text/plain");
-        share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        share.putExtra(Intent.EXTRA_TEXT, "Мой ключик: " + memoryOperation.getTokenUser());
-        String shareKeyTitle = String.valueOf("Ключ");
-        startActivity(Intent.createChooser(share, shareKeyTitle));
-    }
 }

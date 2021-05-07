@@ -26,12 +26,13 @@
             app:cardElevation="0dp"
             android:foreground="?android:selectableItemBackground"
             app:cardBackgroundColor="@android:color/transparent">
+
             <ImageView
-                android:layout_width="21dp"
-                android:layout_height="21dp"
+                android:layout_width="18dp"
+                android:layout_height="11dp"
+                android:layout_gravity="center"
                 android:src="@drawable/ic_arrow_left_r"
-                android:tint="#a1a4a5"
-                android:layout_gravity="center"/>
+                android:tint="#a1a4a5" />
         </androidx.cardview.widget.CardView>
         <TextView
             android:layout_width="match_parent"

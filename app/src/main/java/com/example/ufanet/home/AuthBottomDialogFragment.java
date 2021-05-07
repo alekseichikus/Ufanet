@@ -122,7 +122,7 @@ public class AuthBottomDialogFragment extends BottomSheetDialogFragment {
                                         setLoadingButton();
                                     }
                                     else{
-                                        onResponse("Включите пароль");
+                                        onResponse("Введите пароль");
                                     }
                                 }
                                 else{

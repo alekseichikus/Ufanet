@@ -23,20 +23,10 @@ public class StartActivity extends AppCompatActivity {
         memoryOperation = new MemoryOperation(this);
 
         if(memoryOperation.getTokenUser().isEmpty()){
-            String alphabet = "1234567890abcdef";
-            StringBuilder sb = new StringBuilder();
-            Random random = new Random();
-            int length = 16;
 
-            for(int i = 0; i < length; i++) {
-                int index = random.nextInt(alphabet.length());
-                char randomChar = alphabet.charAt(index);
-                sb.append(randomChar);
-            }
-
-            String randomString = sb.toString();
-            System.out.println("Random String is: " + randomString);
-            memoryOperation.setTokenUser(randomString);
+            String key = generUserKey();
+            System.out.println("Random String is: " + key);
+            memoryOperation.setTokenUser(key);
         }
 
         if(memoryOperation.getPasscodeUser().isEmpty()){
@@ -48,5 +38,22 @@ public class StartActivity extends AppCompatActivity {
             startActivity(intent);
         }
         finish();
+    }
+
+    public static String generUserKey(){
+        String alphabet = "1234567890abcdef";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        int length = 16;
+
+        for(int i = 0; i < length; i++) {
+            int index = random.nextInt(alphabet.length());
+            char randomChar = alphabet.charAt(index);
+            sb.append(randomChar);
+        }
+
+        String randomString = sb.toString();
+
+        return randomString;
     }
 }
