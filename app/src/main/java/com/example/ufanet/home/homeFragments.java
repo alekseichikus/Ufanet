@@ -193,6 +193,11 @@ public class homeFragments extends BottomSheetDialogFragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), PermActivity.class);
+                intent.putExtra("title", "Bluetooth");
+                intent.putExtra("id_image", R.drawable.ic_bluetooth_b);
+                intent.putExtra("id", 0);
+                intent.putExtra("post_title", "Bluetooth нам нужен для поиска устройства" +
+                        " и для активации функции администрирования");
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
 //                GeoLocalRequestToPermissionDialogFragment addPhotoBottomDialogFragment =

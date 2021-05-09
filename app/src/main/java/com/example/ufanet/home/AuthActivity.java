@@ -38,7 +38,7 @@ import java.util.Map;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
-public class PermActivity extends AppCompatActivity {
+public class AuthActivity extends AppCompatActivity {
 
     MemoryOperation memoryOperation;
     ConstraintLayout imageView;
@@ -58,7 +58,7 @@ public class PermActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_perm);
+        setContentView(R.layout.activity_auth);
         imageView = findViewById(R.id.image);
         circleCV = findViewById(R.id.circle);
         rectangleCV = findViewById(R.id.rectangle);
@@ -77,15 +77,7 @@ public class PermActivity extends AppCompatActivity {
 
         setListeners();
 
-        Intent intent = getIntent();
-        String title = intent.getStringExtra("title");
-        String postTitle = intent.getStringExtra("post_title");
-        id = intent.getIntExtra("id", 0);
-        int idResourceImage = intent.getIntExtra("id_image", 0);
-
-        titleTV.setText(title);
-        postTitleTV.setText(postTitle);
-        logoIV.setImageResource(idResourceImage);
+        logoIV.setImageResource(R.drawable.ic_user_alt);
     }
 
     private void setListeners(){
@@ -99,76 +91,9 @@ public class PermActivity extends AppCompatActivity {
         buttonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(id == 0){
-                    if (AuthBottomDialogFragment.isBluetoothEnabled()) {
-                        loadBluetoothActivity();
-                    }
-                    else{
-                        Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                        startActivity(intent);
-                    }
-                }
-                else if(id == 1){
-                    if (AuthBottomDialogFragment.isWifiEnabled(PermActivity.this)) {
-                        loadWifiActivity();
-                    }
-                    else{
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            Intent panelIntent = new Intent(Settings.Panel.ACTION_INTERNET_CONNECTIVITY);
-                            startActivityForResult(panelIntent, 0);
-                        } else {
-                            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                            if(wifiManager != null){
-                                wifiManager.setWifiEnabled(true);
-                                loadWifiActivity();
-                            }
-                        }
-                    }
-                } else if (id == 2) {
-                    if(checkAndRequestPermissions()) {
-                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    }
-                }
+
             }
         });
-    }
-
-    private  boolean checkAndRequestPermissions() {
-        int locationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        List<String> listPermissionsNeeded = new ArrayList<>();
-        if (locationPermission != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),REQUEST_PERMISSION_CODE);
-            return false;
-        }
-        return true;
-    }
-
-
-    private void loadBluetoothActivity(){
-        Intent intent = new Intent(PermActivity.this, PermActivity.class);
-        intent.putExtra("title", "Wifi");
-        intent.putExtra("id_image", R.drawable.ic_wifi);
-        intent.putExtra("id", 1);
-        intent.putExtra("post_title", "Bluetooth нам нужен для поиска устройства" +
-                " и для активации функции администрирования");
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
-        finish();
-    }
-
-    private void loadWifiActivity(){
-        Intent intent = new Intent(PermActivity.this, PermActivity.class);
-        intent.putExtra("title", "Геолокация");
-        intent.putExtra("id_image", R.drawable.ic_map_marker_alt);
-        intent.putExtra("id", 2);
-        intent.putExtra("post_title", "Bluetooth нам нужен для поиска устройства" +
-                " и для активации функции администрирования");
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
-        finish();
     }
 
     @Override
@@ -180,30 +105,6 @@ public class PermActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(id==0)
-        {
-            if (AuthBottomDialogFragment.isBluetoothEnabled()) {
-                loadBluetoothActivity();
-            }
-        }
-        else if(id==1){
-            if (AuthBottomDialogFragment.isWifiEnabled(this)){
-                loadWifiActivity();
-            }
-        }
-        else if(id==2){
-            if (ActivityCompat.checkSelfPermission(PermActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                if(AuthBottomDialogFragment.isGeoDisabled(PermActivity.this)){
-                    //startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                }
-                else{
-                    finish();
-                    Intent intent = new Intent(PermActivity.this, AuthActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(intent);
-                }
-            }
-        }
     }
 
     private void rectangleAnimate(){
@@ -311,29 +212,5 @@ public class PermActivity extends AppCompatActivity {
         });
         a.setDuration(800); // in ms
         imageView.startAnimation(a);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == REQUEST_PERMISSION_CODE) {
-            Map<String, Integer> perms = new HashMap<>();
-            perms.put(Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
-            if (grantResults.length > 0) {
-                for (int i = 0; i < permissions.length; i++)
-                    perms.put(permissions[i], grantResults[i]);
-                if (perms.get(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "sms & location services permission granted");
-                } else {
-                    Log.d(TAG, "Some permissions are not granted ask again ");
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                    }
-                    else {
-                        //setSettingsLayout();
-                    }
-                }
-            }
-        }
     }
 }
