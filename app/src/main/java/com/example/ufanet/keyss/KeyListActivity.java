@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,12 +27,12 @@ import java.util.ArrayList;
 
 public class KeyListActivity extends WifiConnectAppCompatActivity implements IKeyListView{
 
-    CardView closeButtonCV;
     KeyListAdapter adapter;
     ArrayList<IKey> key_items = new ArrayList<>();
     RecyclerView listView;
     MemoryOperation memoryOperation;
     RelativeLayout emptyListRL;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,25 @@ public class KeyListActivity extends WifiConnectAppCompatActivity implements IKe
 
         listView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         listView.setAdapter(adapter);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setTitle("Настройки конфига");
+        toolbar.setTitleTextColor(0xff313435);
+        toolbar.setTitleTextAppearance(this, R.style.RobotoBoldTextAppearance);
+
+        addBackButton();
+    }
+
+    private void addBackButton(){
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_r);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -80,7 +100,6 @@ public class KeyListActivity extends WifiConnectAppCompatActivity implements IKe
     }
 
     void initUI(){
-        closeButtonCV = findViewById(R.id.cv_close_button);
         emptyListRL = findViewById(R.id.l_empty_list);
         adapter = new KeyListAdapter( KeyListActivity.this, key_items);
         listView = findViewById(R.id.list);
@@ -88,12 +107,6 @@ public class KeyListActivity extends WifiConnectAppCompatActivity implements IKe
     }
 
     void setListeners(){
-        closeButtonCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 
     @Override

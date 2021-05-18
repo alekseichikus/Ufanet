@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import com.example.ufanet.R;
 import com.example.ufanet.WifiConnectAppCompatActivity;
@@ -24,7 +25,6 @@ public class EditConfigActivity extends WifiConnectAppCompatActivity implements 
     MemoryOperation memoryOperation;
     EditText nameConfigET;
     CardView saveButtonCV;
-    CardView closeButtonCV;
 
     Switch bluetoothSW;
     Switch wiegandSW;
@@ -42,6 +42,8 @@ public class EditConfigActivity extends WifiConnectAppCompatActivity implements 
     private TrimConfig trimConfig;
     private Integer id_config = 0;
 
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +57,25 @@ public class EditConfigActivity extends WifiConnectAppCompatActivity implements 
         trimConfig = new TrimConfig(memoryOperation.getConfigDataName(id_config), memoryOperation.getConfigDataWord(id_config));
 
         setData();
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setTitle("Редактирование конфига");
+        toolbar.setTitleTextColor(0xff313435);
+        toolbar.setTitleTextAppearance(this, R.style.RobotoBoldTextAppearance);
+
+        addBackButton();
+    }
+
+    private void addBackButton(){
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_r);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     void setData(){
@@ -84,14 +105,7 @@ public class EditConfigActivity extends WifiConnectAppCompatActivity implements 
 
                 memoryOperation.setConfigDataWord(id_config, number);
                 memoryOperation.setConfigDataName(id_config, getConfigName());
-
-                finish();
-            }
-        });
-
-        closeButtonCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                Toast.makeText(EditConfigActivity.this, "Конфиг изменен", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -123,7 +137,6 @@ public class EditConfigActivity extends WifiConnectAppCompatActivity implements 
         nameConfigET = findViewById(R.id.et_name_config);
         dallasSW = findViewById(R.id.sw_dallas);
         gerkonSW = findViewById(R.id.sw_gerkon);
-        closeButtonCV = findViewById(R.id.cv_close_button);
         buttonSW = findViewById(R.id.sw_button);
         lockSW = findViewById(R.id.sw_lock);
         lockInvertSW = findViewById(R.id.sw_lock_invert);

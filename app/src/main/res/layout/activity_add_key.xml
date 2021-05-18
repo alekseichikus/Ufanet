@@ -8,44 +8,11 @@
     android:background="#FFF"
     android:orientation="vertical"
     tools:context=".MainActivity">
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        android:paddingRight="8dp">
-        <androidx.cardview.widget.CardView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:cardCornerRadius="25dp"
-            android:layout_marginLeft="16dp"
-            android:layout_gravity="center"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:id="@+id/cv_close_button"
-            app:cardElevation="0dp"
-            android:foreground="?android:selectableItemBackground"
-            app:cardBackgroundColor="@android:color/transparent">
-
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="11dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_arrow_left_r"
-                android:tint="#a1a4a5" />
-        </androidx.cardview.widget.CardView>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingRight="8dp"
-            android:textSize="24sp"
-            android:layout_marginLeft="8dp"
-            android:gravity="center_vertical"
-            android:fontFamily="@font/roboto_black"
-            android:layout_gravity="center_vertical"
-            android:textColor="#313435"
-            android:text="Добавить ключ"/>
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -61,16 +28,23 @@
                 android:paddingRight="16dp"
                 android:textSize="15sp"
                 android:fontFamily="@font/roboto_bold"
-                android:textColor="#616465"
+                android:textColor="#a1a4a5"
+                android:layout_marginBottom="8dp"
                 android:text="Фамилия имя отчество"/>
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 app:cardCornerRadius="4dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 app:cardElevation="0dp"
-                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="#e1e2e3">
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="4dp"
+                android:layout_margin="1dp"
+                app:cardElevation="0dp"
                 app:cardBackgroundColor="#f1f2f3">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -88,13 +62,14 @@
                         android:padding="16dp"
                         android:maxLength="64"
                         android:id="@+id/et_fio"
-                        android:text="Guk Andrey Anatolievich"
+                        android:hint="Guk Andrey Anatolievich"
                         android:inputType="text"
                         android:textColor="#313435"
-                        android:textColorHint="#616465"
+                        android:textColorHint="#a1a4a5"
                         android:background="@null"
                         android:textSize="17dp"/>
                 </LinearLayout>
+            </androidx.cardview.widget.CardView>
             </androidx.cardview.widget.CardView>
             <TextView
                 android:layout_width="match_parent"
@@ -104,16 +79,23 @@
                 android:paddingRight="16dp"
                 android:textSize="15sp"
                 android:fontFamily="@font/roboto_bold"
-                android:textColor="#616465"
+                android:textColor="#a1a4a5"
+                android:layout_marginBottom="8dp"
                 android:text="Ключ"/>
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 app:cardCornerRadius="4dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 app:cardElevation="0dp"
-                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="#e1e2e3">
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="4dp"
+                android:layout_margin="1dp"
+                app:cardElevation="0dp"
                 app:cardBackgroundColor="#f1f2f3">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -131,12 +113,13 @@
                         android:padding="16dp"
                         android:maxLength="64"
                         android:id="@+id/et_key"
-                        android:text="0000FFFFC021A929"
+                        android:hint="0000FFFFC021A929"
                         android:textColor="#313435"
-                        android:textColorHint="#616465"
+                        android:textColorHint="#a1a4a5"
                         android:background="@null"
                         android:textSize="17dp"/>
                 </LinearLayout>
+            </androidx.cardview.widget.CardView>
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"

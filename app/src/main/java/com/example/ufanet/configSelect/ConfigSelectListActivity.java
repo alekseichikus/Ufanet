@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,10 +17,10 @@ import com.example.ufanet.WifiConnectAppCompatActivity;
 import com.example.ufanet.templates.TrimConfig;
 import com.example.ufanet.utils.MemoryOperation;
 import java.util.ArrayList;
+import androidx.appcompat.widget.Toolbar;
 
 public class ConfigSelectListActivity extends WifiConnectAppCompatActivity implements IConfigSelectListView {
 
-    CardView closeButtonCV;
     ConfigSelectListAdapter configSelectListAdapter;
     ArrayList<TrimConfig> items = new ArrayList<>();
     RecyclerView containerRV;
@@ -28,6 +29,8 @@ public class ConfigSelectListActivity extends WifiConnectAppCompatActivity imple
     Integer id_device;
 
     MemoryOperation memoryOperation;
+
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,26 @@ public class ConfigSelectListActivity extends WifiConnectAppCompatActivity imple
 
         Intent intent = getIntent();
         id_device = intent.getIntExtra("id_device", 0);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setTitle("Конфиги");
+        toolbar.setTitleTextColor(0xff313435);
+        toolbar.setTitleTextAppearance(this, R.style.RobotoBoldTextAppearance);
+
+        addBackButton();
+    }
+
+    private void addBackButton(){
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_r);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private Boolean isItemsConfigListArray(){
@@ -79,7 +102,6 @@ public class ConfigSelectListActivity extends WifiConnectAppCompatActivity imple
     }
 
     void initUI(){
-        closeButtonCV = findViewById(R.id.cv_close_button);
         emptyListRL = findViewById(R.id.l_empty_list);
         configSelectListAdapter = new ConfigSelectListAdapter( ConfigSelectListActivity.this, items);
         containerRV = findViewById(R.id.list);
@@ -87,12 +109,6 @@ public class ConfigSelectListActivity extends WifiConnectAppCompatActivity imple
     }
 
     void setListeners(){
-        closeButtonCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 
     @Override

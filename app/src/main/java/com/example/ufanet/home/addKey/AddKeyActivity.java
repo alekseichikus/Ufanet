@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import com.example.ufanet.R;
 import com.example.ufanet.WifiConnectAppCompatActivity;
@@ -18,8 +19,9 @@ public class AddKeyActivity extends WifiConnectAppCompatActivity implements IAdd
     EditText fioET;
     EditText keyET;
     CardView addButtonCV;
-    CardView closeButtonCV;
     IAddKeyPresenter addKeyPresenter;
+
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,25 @@ public class AddKeyActivity extends WifiConnectAppCompatActivity implements IAdd
         setListeners();
 
         memoryOperation = new MemoryOperation(this);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setTitle("Добавление ключа");
+        toolbar.setTitleTextColor(0xff313435);
+        toolbar.setTitleTextAppearance(this, R.style.RobotoBoldTextAppearance);
+
+        addBackButton();
+    }
+
+    private void addBackButton(){
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_r);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     void setListeners() {
@@ -43,19 +64,12 @@ public class AddKeyActivity extends WifiConnectAppCompatActivity implements IAdd
             }
         });
 
-        closeButtonCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 
     void initUI() {
         addButtonCV = findViewById(R.id.cv_add_button);
         keyET = findViewById(R.id.et_key);
         fioET = findViewById(R.id.et_fio);
-        closeButtonCV = findViewById(R.id.cv_close_button);
         addKeyPresenter = new AddKeyPresenter(this);
     }
 
@@ -71,6 +85,7 @@ public class AddKeyActivity extends WifiConnectAppCompatActivity implements IAdd
 
     @Override
     public void closeView() {
+        Toast.makeText(this, "Ключ добавлен", Toast.LENGTH_SHORT).show();
         finish();
     }
 

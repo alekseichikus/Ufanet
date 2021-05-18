@@ -23,6 +23,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:screenOrientation="portrait"
         android:theme="@style/Theme.Ufanet">
         <activity android:name=".start.StartActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -34,56 +35,81 @@
         </activity>
         <activity android:label="@string/app_name" android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
             />
 
         <activity android:label="@string/app_name" android:name=".passwordActivity.RegPasscodeActivity"
             android:theme="@style/AppTheme2.NoActionBar"
+            android:screenOrientation="portrait"
             />
 
         <activity android:label="@string/app_name" android:name=".settings.SettingActivity"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
             />
 
         <activity android:label="@string/app_name" android:name=".home.PermActivity"
             android:theme="@style/AppTheme.NoActionBar2"
+            android:screenOrientation="portrait"
             />
 
         <activity android:label="@string/app_name" android:name=".home.AuthActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar2"/>
 
         <activity android:label="@string/app_name" android:name=".passwordActivity.LogPasscodeActivity"
             android:theme="@style/AppTheme2.NoActionBar"
+            android:screenOrientation="portrait"
             />
         <activity android:label="@string/app_name" android:name=".edit.LoadConfigActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar"
+        android:screenOrientation="portrait"
             />
 
         <activity android:label="@string/app_name" android:name=".connect.ConnectActivity"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
             />
 
         <activity android:label="@string/app_name" android:name=".keyss.KeyListActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             />
 
         <activity android:label="@string/app_name" android:name=".addConfig.AddConfigActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             />
         <activity android:label="@string/app_name" android:name=".configList.ConfigListActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             />
         <activity android:label="@string/app_name" android:name=".editConfig.EditConfigActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             />
 
         <activity android:label="@string/app_name" android:name=".configSelect.ConfigSelectListActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             />
         <activity android:label="@string/app_name" android:name=".home.addKey.AddKeyActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             />
 
         <activity android:label="@string/app_name" android:name=".editKey.EditKeyActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             />
     </application>

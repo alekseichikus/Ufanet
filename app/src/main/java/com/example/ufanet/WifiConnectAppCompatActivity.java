@@ -13,19 +13,22 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.ufanet.utils.MemoryOperation;
+
 import static com.example.ufanet.utils.Constants.APP_PREFERENCES_SSID_DEVICES;
 
 public class WifiConnectAppCompatActivity extends AppCompatActivity {
 
-    String networkSSID = APP_PREFERENCES_SSID_DEVICES;
 
     Runnable wifiRunnable;
     Handler wifiHandler;
+    MemoryOperation memoryOperation;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         wifiHandler = new Handler();
+        memoryOperation = new MemoryOperation(this);
 
         wifiRunnable = new Runnable() {
             public void run() {
@@ -54,7 +57,7 @@ public class WifiConnectAppCompatActivity extends AppCompatActivity {
             if( wifiInfo.getNetworkId() == -1 ){
                 return false; // Not connected to an access point
             }
-            else if(!wifiInfo.getSSID().equals(String.format("\"%s\"", networkSSID))){
+            else if(!wifiInfo.getSSID().equals(String.format("\"%s\"", memoryOperation.getLoginUser()))){
                 return false;
             }
             return true; // Connected to an access point

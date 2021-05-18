@@ -10,38 +10,11 @@
         android:layout_height="match_parent"
         android:id="@+id/content_layout"
         android:orientation="vertical">
-        <LinearLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp">
-            <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/cv_close_button"
-                android:background="?android:selectableItemBackground"
-                android:foreground="?android:selectableItemBackground"
-                android:clickable="true"
-                app:cardCornerRadius="30dp"
-                android:layout_gravity="center_vertical"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@android:color/transparent">
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_margin="10dp"
-                    android:tint="#a1a4a5"
-                    android:src="@drawable/ic_arrow_left_r"/>
-            </androidx.cardview.widget.CardView>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:paddingRight="8dp"
-                android:textSize="24sp"
-                android:fontFamily="@font/roboto_black"
-                android:textColor="#313435"
-                android:text="Ключи"/>
-        </LinearLayout>
+            app:layout_constraintTop_toTopOf="parent" />
         <include
             layout="@layout/layout_empty_list"
             android:id="@+id/l_empty_list"/>

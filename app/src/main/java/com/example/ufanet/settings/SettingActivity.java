@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import com.example.ufanet.R;
@@ -60,6 +61,7 @@ public class SettingActivity extends WifiConnectAppCompatActivity implements ISe
         memoryOperation = new MemoryOperation(this);
 
         toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(0xff313435);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setTitle("Настройки");
@@ -102,12 +104,22 @@ public class SettingActivity extends WifiConnectAppCompatActivity implements ISe
         configListButtonCV = findViewById(R.id.cv_config_list_button);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == 2){
+            Toast.makeText(this, "Конфиг сохранён, устройство перезагружено", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
     void setListeners(){
         settingButtonCV.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(SettingActivity.this, LoadConfigActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, 2);
             }
         });
 

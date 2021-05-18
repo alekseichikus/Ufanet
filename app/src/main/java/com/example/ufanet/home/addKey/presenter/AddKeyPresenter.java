@@ -20,7 +20,6 @@ public class AddKeyPresenter implements IAddKeyPresenter, AddKeyModel.OnFinished
     @Override
     public void onFinished() {
         if (view != null) {
-            view.onResponse("Ключ юыл добавлен");
             view.closeView();
         }
     }

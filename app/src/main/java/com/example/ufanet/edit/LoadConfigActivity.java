@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
+
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,7 +29,6 @@ public class LoadConfigActivity extends WifiConnectAppCompatActivity implements 
     EditText loginUserET;
     EditText passwordUserET;
     CardView saveButtonCV;
-    CardView closeButtonCV;
     CardView addSlaveButtonCV;
 
     RecyclerView listView;
@@ -37,6 +38,7 @@ public class LoadConfigActivity extends WifiConnectAppCompatActivity implements 
 
     private ILoadConfigPresenter presenter;
     private Integer id_device = 0;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,26 @@ public class LoadConfigActivity extends WifiConnectAppCompatActivity implements 
         configSelectAdapter.notifyDataSetChanged();
 
         setData();
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setTitleTextColor(0xff313435);
+        getSupportActionBar().setTitle("Настройки конфига");
+        toolbar.setTitleTextAppearance(this, R.style.RobotoBoldTextAppearance);
+
+        addBackButton();
+    }
+
+    private void addBackButton(){
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_r);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     void initUI() {
@@ -62,7 +84,6 @@ public class LoadConfigActivity extends WifiConnectAppCompatActivity implements 
         passwordUserET = findViewById(R.id.et_password);
         saveButtonCV = findViewById(R.id.cv_save_button);
         addSlaveButtonCV = findViewById(R.id.cv_add_slave_button);
-        closeButtonCV = findViewById(R.id.cv_close_button);
         configSelectAdapter = new ConfigSelectAdapter( LoadConfigActivity.this, items);
         listView = findViewById(R.id.list);
     }
@@ -80,18 +101,17 @@ public class LoadConfigActivity extends WifiConnectAppCompatActivity implements 
             }
         });
 
-        closeButtonCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         addSlaveButtonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                items.add(new ConfigSelect("Дополнительное устройство", "Не выбрано", (char) 565656));
-                configSelectAdapter.notifyDataSetChanged();
+                if(items.size() < 4){
+                    items.add(new ConfigSelect("Доп. устройство", "Не выбрано", (char) 565656));
+                    configSelectAdapter.notifyDataSetChanged();
+                    if(items.size() == 4){
+                        addSlaveButtonCV.setVisibility(View.GONE);
+                    }
+                }
             }
         });
     }
@@ -118,6 +138,10 @@ public class LoadConfigActivity extends WifiConnectAppCompatActivity implements 
 
     @Override
     public void closeView() {
+        Intent data = new Intent();
+        getMemoryOperation().setLoginUser(getLoginUser());
+        getMemoryOperation().setPasswordUser(getPasswordUser());
+        setResult(2, data);
         finish();
     }
 

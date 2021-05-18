@@ -8,43 +8,13 @@
     android:background="#FFF"
     android:orientation="vertical"
     tools:context=".MainActivity">
-    <LinearLayout
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        android:paddingRight="8dp">
-        <androidx.cardview.widget.CardView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:cardCornerRadius="25dp"
-            android:layout_marginLeft="16dp"
-            android:layout_gravity="center"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:id="@+id/cv_close_button"
-            app:cardElevation="0dp"
-            android:foreground="?android:selectableItemBackground"
-            app:cardBackgroundColor="@android:color/transparent">
-            <ImageView
-                android:layout_width="21dp"
-                android:layout_height="21dp"
-                android:src="@drawable/ic_arrow_left_r"
-                android:tint="#a1a4a5"
-                android:layout_gravity="center"/>
-        </androidx.cardview.widget.CardView>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingRight="8dp"
-            android:textSize="24sp"
-            android:layout_marginLeft="8dp"
-            android:gravity="center_vertical"
-            android:fontFamily="@font/roboto_black"
-            android:layout_gravity="center_vertical"
-            android:textColor="#313435"
-            android:text="Настройка устройства"/>
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -61,9 +31,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="8dp"
                     android:fontFamily="@font/roboto_bold"
                     android:textColor="#a1a4a5"
                     android:text="Аутентификация"/>
@@ -72,7 +42,6 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="4dp"
                     app:cardElevation="0dp"
-                    android:layout_marginTop="8dp"
                     app:cardBackgroundColor="#e1e2e3">
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
@@ -149,7 +118,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:layout_marginTop="16dp"
                     android:fontFamily="@font/roboto_bold"
                     android:textColor="#a1a4a5"
@@ -157,7 +126,7 @@
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 android:id="@+id/list"/>
 
@@ -174,17 +143,15 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#e1e4e5">
+                    android:gravity="center"
+                    android:background="#e7e8e9">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_regular"
-                        android:gravity="center"
-                        android:padding="16dp"
-                        android:text="Добавить устройство"
-                        android:textColor="#616465"
-                        android:textSize="16sp" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_plus_r"
+                        android:tint="#616465"
+                        android:layout_margin="16dp"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

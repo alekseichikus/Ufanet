@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,12 +20,12 @@ import java.util.ArrayList;
 
 public class ConfigListActivity extends WifiConnectAppCompatActivity implements IConfigListView {
 
-    CardView closeButtonCV;
     ConfigListAdapter configListAdapter;
     ArrayList<TrimConfig> items = new ArrayList<>();
     RecyclerView containerRV;
     RelativeLayout emptyListRL;
 
+    private Toolbar toolbar;
     MemoryOperation memoryOperation;
 
     @Override
@@ -43,6 +44,26 @@ public class ConfigListActivity extends WifiConnectAppCompatActivity implements 
         else{
             showEmptyView();
         }
+
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(0xff313435);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setTitle("Конфиги");
+        toolbar.setTitleTextAppearance(this, R.style.RobotoBoldTextAppearance);
+
+        addBackButton();
+    }
+
+    private void addBackButton(){
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_r);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -54,7 +75,6 @@ public class ConfigListActivity extends WifiConnectAppCompatActivity implements 
     }
 
     void initUI(){
-        closeButtonCV = findViewById(R.id.cv_close_button);
         emptyListRL = findViewById(R.id.l_empty_list);
         configListAdapter = new ConfigListAdapter( ConfigListActivity.this, items);
         containerRV = findViewById(R.id.list);
@@ -63,12 +83,6 @@ public class ConfigListActivity extends WifiConnectAppCompatActivity implements 
     }
 
     void setListeners(){
-        closeButtonCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 
     private Boolean isItemsConfigListArray(){

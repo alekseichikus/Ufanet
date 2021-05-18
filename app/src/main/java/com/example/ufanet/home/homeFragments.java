@@ -56,7 +56,7 @@ public class homeFragments extends BottomSheetDialogFragment {
     private AdvertiseData.Builder dataBuilder;
     private AdvertiseSettings.Builder settingsBuilder;
 
-    byte[] tokenBeacon = {(byte) 0x55, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0};
+    byte[] tokenBeacon = {(byte) 0x55, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x0, (byte)0x43, (byte)0x01};
 
     @Override
     public void onAttach(Context context) {
