@@ -16,7 +16,7 @@
         <!-- Customize your theme here. -->
         <item name="android:windowLightStatusBar">true</item>
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
-        <item name="colorPrimaryDark">#f9fbfc</item>
+        <item name="colorPrimaryDark">#ffffff</item>
     </style>
 
     <style name="AppTheme2" parent="Theme.AppCompat.DayNight.DarkActionBar">
@@ -27,18 +27,26 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="RobotoBoldTextAppearance">
+        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
     <style name="AppTheme.NoActionBar2">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="AppTheme2.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="AppBottomSheetDialogTheme"

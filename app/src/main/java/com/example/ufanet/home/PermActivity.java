@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,6 +38,9 @@ import java.util.List;
 import java.util.Map;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static com.example.ufanet.home.AuthActivity.isBluetoothEnabled;
+import static com.example.ufanet.home.AuthActivity.isGeoDisabled;
+import static com.example.ufanet.home.AuthActivity.isWifiEnabled;
 
 public class PermActivity extends AppCompatActivity {
 
@@ -71,9 +75,8 @@ public class PermActivity extends AppCompatActivity {
 
         Window window = getWindow();
         WindowManager.LayoutParams winParams = window.getAttributes();
-        winParams.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
         window.setAttributes(winParams);
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         setListeners();
 
@@ -86,6 +89,18 @@ public class PermActivity extends AppCompatActivity {
         titleTV.setText(title);
         postTitleTV.setText(postTitle);
         logoIV.setImageResource(idResourceImage);
+
+        if(id==2){
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                //buttonCV.setCardBackgroundColor(0xff00ff00);
+            }
+            else {
+                changeButtonText("Перейти в настройки");
+                //buttonCV.setCardBackgroundColor(0xff000000);
+            }
+        }
+
+        blockAnimate();
     }
 
     private void setListeners(){
@@ -100,7 +115,7 @@ public class PermActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(id == 0){
-                    if (AuthBottomDialogFragment.isBluetoothEnabled()) {
+                    if (isBluetoothEnabled()) {
                         loadBluetoothActivity();
                     }
                     else{
@@ -109,7 +124,7 @@ public class PermActivity extends AppCompatActivity {
                     }
                 }
                 else if(id == 1){
-                    if (AuthBottomDialogFragment.isWifiEnabled(PermActivity.this)) {
+                    if (isWifiEnabled(PermActivity.this)) {
                         loadWifiActivity();
                     }
                     else{
@@ -171,29 +186,24 @@ public class PermActivity extends AppCompatActivity {
         finish();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        blockAnimate();
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         if(id==0)
         {
-            if (AuthBottomDialogFragment.isBluetoothEnabled()) {
+            if (isBluetoothEnabled()) {
                 loadBluetoothActivity();
             }
         }
         else if(id==1){
-            if (AuthBottomDialogFragment.isWifiEnabled(this)){
+            if (isWifiEnabled(this)){
                 loadWifiActivity();
             }
         }
         else if(id==2){
             if (ActivityCompat.checkSelfPermission(PermActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                if(AuthBottomDialogFragment.isGeoDisabled(PermActivity.this)){
+                if(isGeoDisabled(PermActivity.this)){
                     //startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                 }
                 else{
@@ -272,13 +282,13 @@ public class PermActivity extends AppCompatActivity {
 
             }
         });
-        aa.setDuration(400); // in ms
+        aa.setDuration(300); // in ms
         circleCV.startAnimation(aa);
     }
 
     private void blockAnimate(){
         final int newLeftMargin = 300;
-        final int newLeftMargin2 = 1300;
+        final int newLeftMargin2 = 1700;
         Animation a = new Animation() {
 
             @Override
@@ -309,7 +319,7 @@ public class PermActivity extends AppCompatActivity {
 
             }
         });
-        a.setDuration(800); // in ms
+        a.setDuration(600); // in ms
         imageView.startAnimation(a);
     }
 
@@ -327,13 +337,23 @@ public class PermActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "Some permissions are not granted ask again ");
                     if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
+                        buttonCV.setCardBackgroundColor(0xff00ff00);
                     }
                     else {
-                        //setSettingsLayout();
+                        changeButtonText("Перейти в настройки");
+                        buttonCV.setCardBackgroundColor(0xff000000);
+                        Intent intent = new Intent(
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        intent.setData(Uri.parse("package:" + getPackageName()));
+                        startActivity(intent);
                     }
                 }
             }
         }
+    }
+
+    private void changeButtonText(String text){
+        TextView textView = findViewById(R.id.tv_button);
+        textView.setText(text);
     }
 }

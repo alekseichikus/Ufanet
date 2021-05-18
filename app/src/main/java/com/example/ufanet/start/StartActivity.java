@@ -41,7 +41,7 @@ public class StartActivity extends AppCompatActivity {
     }
 
     public static String generUserKey(){
-        String alphabet = "1234567890abcdef";
+        String alphabet = "1234567890ABCDEF";
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
         int length = 16;

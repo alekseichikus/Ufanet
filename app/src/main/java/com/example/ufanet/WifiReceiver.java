@@ -17,12 +17,12 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.ufanet.home.AuthBottomDialogFragment;
+import com.example.ufanet.home.AuthActivity;
 import com.example.ufanet.settings.SettingActivity;
 
 public class WifiReceiver extends BroadcastReceiver {
 
-    AuthBottomDialogFragment fragment;
+    AuthActivity fragment;
     Handler preWifiConnectHandler;
     Runnable preWifiConnectRunnable;
 
@@ -41,14 +41,14 @@ public class WifiReceiver extends BroadcastReceiver {
     WifiConfiguration wifiConfig;
     int netId;
 
-    public WifiReceiver(AuthBottomDialogFragment fragment){
+    public WifiReceiver(AuthActivity fragment){
         this.fragment = fragment;
         preWifiConnectHandler = new Handler();
         wifiManager = fragment.getWifiManager();
 
         preWifiConnectRunnable = new Runnable() {
             public void run() {
-                if (fragment.getActivity() != null) {
+                if (fragment != null) {
                     scheduleSendLocation();
                 }
             }
@@ -77,7 +77,7 @@ public class WifiReceiver extends BroadcastReceiver {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             switch (action){
                 case WifiManager.SCAN_RESULTS_AVAILABLE_ACTION:
-                    Log.d(fragment.getActivity().getClass().getSimpleName(), "wifi dont connect");
+                    Log.d(fragment.getClass().getSimpleName(), "wifi dont connect");
                     if(getCountAttemptsToConnect() < NUMBER_CONNECTION_ATTEMPTS){
                         preWifiConnectHandler.removeCallbacks(preWifiConnectRunnable);
                         preWifiConnectHandler.postDelayed(preWifiConnectRunnable, WIFI_CONNECT_DELAY);
@@ -86,7 +86,7 @@ public class WifiReceiver extends BroadcastReceiver {
                     }
                     else{
                         fragment.setClickableButton();
-                        Toast.makeText(fragment.getContext(), "Не удалось подключиться", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(fragment, "Не удалось подключиться", Toast.LENGTH_SHORT).show();
                         setCountAttemptsToConnect(0);
                     }
                     break;
@@ -110,15 +110,15 @@ public class WifiReceiver extends BroadcastReceiver {
                     if(networkInfo.isConnected()) {
                         if(checkWifiOnAndConnected()){
                             preWifiConnectHandler.removeCallbacks(preWifiConnectRunnable);
-                            Log.d(fragment.getActivity().getClass().getSimpleName(), "wifi connect 2");
-                            Intent settingActivityIntent = new Intent(fragment.getActivity(), SettingActivity.class);
+                            Log.d(fragment.getClass().getSimpleName(), "wifi connect 2");
+                            Intent settingActivityIntent = new Intent(fragment, SettingActivity.class);
                             settingActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                             fragment.startActivityForResult(settingActivityIntent, 0);
                             try{
-                                fragment.getActivity().unregisterReceiver(this);
+                                fragment.unregisterReceiver(this);
                             }catch (Exception e){
                             }
-                            fragment.dismiss();
+                            fragment.finish();
                         }
                     }
                     break;
@@ -128,7 +128,7 @@ public class WifiReceiver extends BroadcastReceiver {
             switch (action){
                 case WifiManager.SCAN_RESULTS_AVAILABLE_ACTION:
                     if(!checkWifiOnAndConnected()){
-                        Log.d(fragment.getActivity().getClass().getSimpleName(), "wifi dont connect");
+                        Log.d(fragment.getClass().getSimpleName(), "wifi dont connect");
                         if(getCountAttemptsToConnect() < NUMBER_CONNECTION_ATTEMPTS){
                             preWifiConnectHandler.removeCallbacks(preWifiConnectRunnable);
                             preWifiConnectHandler.postDelayed(preWifiConnectRunnable, WIFI_CONNECT_DELAY);
@@ -137,20 +137,20 @@ public class WifiReceiver extends BroadcastReceiver {
                         }
                         else{
                             fragment.setClickableButton();
-                            Toast.makeText(fragment.getContext(), "Не удалось подключиться", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(fragment, "Не удалось подключиться", Toast.LENGTH_SHORT).show();
                             setCountAttemptsToConnect(0);
                         }
                     }
                     else{
-                        Log.d(fragment.getActivity().getClass().getSimpleName(), "wifi connect");
-                        Intent settingActivityIntent = new Intent(fragment.getActivity(), SettingActivity.class);
+                        Log.d(fragment.getClass().getSimpleName(), "wifi connect");
+                        Intent settingActivityIntent = new Intent(fragment, SettingActivity.class);
                         settingActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         fragment.startActivityForResult(settingActivityIntent, 0);
                         try{
-                            fragment.getActivity().unregisterReceiver(this);
+                            fragment.unregisterReceiver(this);
                         }catch (Exception e){
                         }
-                        fragment.dismiss();
+                        fragment.finish();
                     }
                     break;
             }
@@ -205,7 +205,7 @@ public class WifiReceiver extends BroadcastReceiver {
 
             nr = networkRequestBuilder.build();
             cm = (ConnectivityManager)
-                    fragment.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                    fragment.getSystemService(Context.CONNECTIVITY_SERVICE);
             ConnectivityManager.NetworkCallback networkCallback = new
                     ConnectivityManager.NetworkCallback() {
                         @Override

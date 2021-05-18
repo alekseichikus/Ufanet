@@ -1,10 +1,13 @@
 package com.example.ufanet.home;
 
 import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,11 +18,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.Transformation;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +34,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.ufanet.BeaconBluetooth;
 import com.example.ufanet.R;
+import com.example.ufanet.WifiReceiver;
 import com.example.ufanet.utils.MemoryOperation;
 
 import java.util.ArrayList;
@@ -51,7 +59,23 @@ public class AuthActivity extends AppCompatActivity {
     ImageView logoIV;
     LinearLayout contentLL;
 
+    EditText loginUserET;
+    EditText passwordUserET;
+
+    ImageView saveButtonImageIV;
+    TextView saveButtonTextTV;
+
+    private BeaconBluetooth beaconBluetooth;
+    public WifiReceiver wifiResiver;
+
+    WifiManager wifiManager;
+
+    public static final String APP_PREFERENCES_LOGIN_USER = "login_user";
+    public static final String APP_PREFERENCES_PASSWORD_USER = "password_user";
+
     public final Integer REQUEST_PERMISSION_CODE = 1;
+
+    IntentFilter intentFilter;
 
     int id = 0;
 
@@ -69,15 +93,48 @@ public class AuthActivity extends AppCompatActivity {
         titleTV = findViewById(R.id.tv_title);
         postTitleTV = findViewById(R.id.tv_posttitle);
 
+        loginUserET = findViewById(R.id.et_login);
+        passwordUserET = findViewById(R.id.et_password);
+
+        saveButtonImageIV = findViewById(R.id.iv_loading);
+        saveButtonTextTV = findViewById(R.id.tv_loading);
+
+        beaconBluetooth = new BeaconBluetooth(this);
+        wifiResiver = new WifiReceiver(this);
+
+        memoryOperation = new MemoryOperation(this);
+
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+
+        setSSIDDeviceET();
+        setPasswordDeviceET();
+
         Window window = getWindow();
         WindowManager.LayoutParams winParams = window.getAttributes();
-        winParams.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
         window.setAttributes(winParams);
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         setListeners();
+        initWifi();
 
         logoIV.setImageResource(R.drawable.ic_user_alt);
+
+        blockAnimate();
+    }
+
+    public void setSSIDDeviceET(){
+        loginUserET.setText(memoryOperation.getLoginUser());
+    }
+
+    public void setPasswordDeviceET(){
+        passwordUserET.setText(memoryOperation.getPasswordUser());
+    }
+
+    private void initWifi(){
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
     }
 
     private void setListeners(){
@@ -91,20 +148,129 @@ public class AuthActivity extends AppCompatActivity {
         buttonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (!isGeoDisabled(AuthActivity.this)) {
+                    beaconBluetooth.initBluetooth();
+                    if(isBluetoothEnabled()){
+                        if(isWifiEnabled(AuthActivity.this)){
+                            if(!isEmptyString(loginUserET.getText().toString())){
+                                if(!isEmptyString(passwordUserET.getText().toString())){
+                                    updateDeviceLogPass();
+                                    beaconBluetooth.startBeacon();
+                                    setLoadingButton();
+                                }
+                                else{
+                                    onResponse("Введите пароль");
+                                }
+                            }
+                            else{
+                                onResponse("Введите логин");
+                            }
+                        }
+                        else{
+                            onResponse("Включите Wifi");
+                        }
+                    }
+                    else{
+                        onResponse("Вы отключили Bluetooth, включите)");
+                    }
+                }
+                else{
+                    onResponse("Предоставьте доступ к геолокации");
+                }
             }
         });
     }
 
+    public void updateDeviceLogPass(){
+        memoryOperation.setLoginUser(loginUserET.getText().toString());
+        memoryOperation.setPasswordUser(passwordUserET.getText().toString());
+    }
+
+    Boolean isEmptyString(String text){
+        if(text.isEmpty())
+            return true;
+        return false;
+    }
+
+    public void onResponse(String string) {
+        Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
+    }
+
+    public static boolean isGeoDisabled(Context context) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean isGeoDisabled = !isGPSEnabled && !isNetworkEnabled;
+        return isGeoDisabled;
+    }
+
     @Override
-    protected void onStart() {
-        super.onStart();
-        blockAnimate();
+    public void onPause() {
+        super.onPause();
+        try{
+            unregisterReceiver(wifiResiver);
+        }catch (Exception e){
+        }
+        wifiResiver.stopHandler();
+    }
+
+    public static boolean isBluetoothEnabled(){
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            return false;
+        } else if (!mBluetoothAdapter.isEnabled()) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isWifiEnabled(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager != null) {
+            if (wifiManager.isWifiEnabled()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setLoadingButton(){
+        saveButtonImageIV.setVisibility(View.VISIBLE);
+        Animation rotationAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_infinity);
+        saveButtonImageIV.startAnimation(rotationAnimation);
+        saveButtonTextTV.setText("Пытаюсь подключиться");
+        buttonCV.setEnabled(false);
+    }
+
+    public WifiManager getWifiManager(){
+        return wifiManager;
+    }
+
+    public String getSSIDDeviceET(){
+        return loginUserET.getText().toString();
+    }
+
+    public String getPasswordDeviceET(){
+        return passwordUserET.getText().toString();
+    }
+
+    public void setClickableButton(){
+        saveButtonTextTV.setText("Начать настройку");
+        buttonCV.setEnabled(true);
+        saveButtonImageIV.clearAnimation();
+        saveButtonImageIV.setVisibility(View.GONE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        try{
+            registerReceiver(wifiResiver, intentFilter);
+        }catch (Exception e){
+        }
+
+        wifiResiver.setCountAttemptsToConnect(0);
+        setClickableButton();
     }
 
     private void rectangleAnimate(){
@@ -173,13 +339,13 @@ public class AuthActivity extends AppCompatActivity {
 
             }
         });
-        aa.setDuration(400); // in ms
+        aa.setDuration(300); // in ms
         circleCV.startAnimation(aa);
     }
 
     private void blockAnimate(){
         final int newLeftMargin = 300;
-        final int newLeftMargin2 = 1300;
+        final int newLeftMargin2 = 1600;
         Animation a = new Animation() {
 
             @Override
@@ -210,7 +376,7 @@ public class AuthActivity extends AppCompatActivity {
 
             }
         });
-        a.setDuration(800); // in ms
+        a.setDuration(600); // in ms
         imageView.startAnimation(a);
     }
 }

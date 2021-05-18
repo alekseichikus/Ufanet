@@ -8,15 +8,19 @@ import android.net.wifi.WifiNetworkSuggestion;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import com.example.ufanet.R;
 import com.example.ufanet.WifiConnectAppCompatActivity;
 import com.example.ufanet.addConfig.AddConfigActivity;
 import com.example.ufanet.configList.ConfigListActivity;
 import com.example.ufanet.edit.LoadConfigActivity;
+import com.example.ufanet.home.PermActivity;
 import com.example.ufanet.home.addKey.AddKeyActivity;
 import com.example.ufanet.keyss.KeyListActivity;
 import com.example.ufanet.settings.presenter.ISettingPresenter;
@@ -32,15 +36,15 @@ import static com.example.ufanet.utils.Constants.APP_PREFERENCES_SSID_DEVICES;
 public class SettingActivity extends WifiConnectAppCompatActivity implements ISettingView {
 
     CardView settingButtonCV;
-    CardView reloadButtonCV;
     CardView updateButtonCV;
     CardView addKeyButtonCV;
     CardView keyListButtonCV;
-    CardView closeButtonCV;
     CardView addConfigButtonCV;
     CardView configListButtonCV;
 
     ISettingPresenter presenter;
+
+    Toolbar toolbar;
 
     MemoryOperation memoryOperation;
 
@@ -54,6 +58,14 @@ public class SettingActivity extends WifiConnectAppCompatActivity implements ISe
         presenter = new SettingPresenter(this);
 
         memoryOperation = new MemoryOperation(this);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setTitle("Настройки");
+        toolbar.setTitleTextAppearance(this, R.style.RobotoBoldTextAppearance);
+
+        addBackButton();
     }
 
     @Override
@@ -70,13 +82,22 @@ public class SettingActivity extends WifiConnectAppCompatActivity implements ISe
         }
     }
 
+    private void addBackButton(){
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_r);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
     void initUI(){
         settingButtonCV = findViewById(R.id.cv_setting_button);
-        reloadButtonCV = findViewById(R.id.cv_reload_button);
         updateButtonCV = findViewById(R.id.cv_update_device_button);
         keyListButtonCV = findViewById(R.id.cv_keys_list_button);
         addKeyButtonCV = findViewById(R.id.cv_add_key_button);
-        closeButtonCV = findViewById(R.id.cv_close_button);
         addConfigButtonCV = findViewById(R.id.cv_add_config_button);
         configListButtonCV = findViewById(R.id.cv_config_list_button);
     }
@@ -114,27 +135,12 @@ public class SettingActivity extends WifiConnectAppCompatActivity implements ISe
             }
         });
 
-        reloadButtonCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getPresenter().requestReloadDevice();
-                finish();
-            }
-        });
-
         addKeyButtonCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SettingActivity.this, AddKeyActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivityForResult(intent, 0);
-            }
-        });
-
-        closeButtonCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
             }
         });
 
@@ -163,5 +169,20 @@ public class SettingActivity extends WifiConnectAppCompatActivity implements ISe
     @Override
     public void closeView() {
         finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_reload) {
+            getPresenter().requestReloadDevice();
+            finish();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_setting, menu);
+        return true;
     }
 }

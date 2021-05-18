@@ -136,7 +136,7 @@ public class PasscodeView extends FrameLayout implements View.OnClickListener {
         });
 
         tintImageView(iv_lock, 0xffffffff);
-        tintImageView(numberB, numberTextColor);
+        tintImageView(numberB, 0xffa1a4a5);
         tintImageView(iv_ok, correctStatusColor);
 
         number0.setTag(0);

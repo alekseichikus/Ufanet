@@ -67,84 +67,79 @@
                     android:fontFamily="@font/roboto_bold"
                     android:textColor="#a1a4a5"
                     android:text="Аутентификация"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingRight="8dp"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:fontFamily="@font/roboto_regular"
-                    android:layout_gravity="center_vertical"
-                    android:textColor="#313435"
-                    android:text="Логин"/>
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     app:cardCornerRadius="4dp"
                     app:cardElevation="0dp"
                     android:layout_marginTop="8dp"
-                    app:cardBackgroundColor="#f1f2f3">
-                    <LinearLayout
+                    app:cardBackgroundColor="#e1e2e3">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent"
+                        app:cardCornerRadius="4dp"
+                        app:cardElevation="0dp"
+                        android:layout_margin="1dp"
+                        app:cardBackgroundColor="#f1f2f3">
                         <LinearLayout
-                            android:focusable="true"
-                            android:focusableInTouchMode="true"
-                            android:clickable="true"
-                            android:layout_width="0px"
-                            android:layout_height="0px" />
-                        <EditText
                             android:layout_width="match_parent"
-                            android:layout_height="fill_parent"
-                            android:padding="16dp"
-                            android:maxLength="64"
-                            android:id="@+id/et_login"
-                            android:textColor="#313435"
-                            android:textColorHint="#616465"
-                            android:background="@null"
-                            android:textSize="17dp"/>
-                    </LinearLayout>
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <LinearLayout
+                                android:focusable="true"
+                                android:focusableInTouchMode="true"
+                                android:clickable="true"
+                                android:layout_width="0px"
+                                android:layout_height="0px" />
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="fill_parent"
+                                android:padding="16dp"
+                                android:maxLength="64"
+                                android:id="@+id/et_login"
+                                android:textColor="#313435"
+                                android:textColorHint="#616465"
+                                android:background="@null"
+                                android:textSize="17dp"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
                 </androidx.cardview.widget.CardView>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingRight="8dp"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/roboto_regular"
-                    android:layout_gravity="center_vertical"
-                    android:textColor="#313435"
-                    android:text="Пароль"/>
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     app:cardCornerRadius="4dp"
                     app:cardElevation="0dp"
                     android:layout_marginTop="8dp"
-                    app:cardBackgroundColor="#f1f2f3">
-                    <LinearLayout
+                    app:cardBackgroundColor="#e1e2e3">
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent"
+                        app:cardCornerRadius="4dp"
+                        app:cardElevation="0dp"
+                        android:layout_margin="1dp"
+                        app:cardBackgroundColor="#f1f2f3">
                         <LinearLayout
-                            android:focusable="true"
-                            android:focusableInTouchMode="true"
-                            android:clickable="true"
-                            android:layout_width="0px"
-                            android:layout_height="0px" />
-                        <EditText
                             android:layout_width="match_parent"
-                            android:layout_height="fill_parent"
-                            android:padding="16dp"
-                            android:maxLength="64"
-                            android:id="@+id/et_password"
-                            android:textColor="#313435"
-                            android:textColorHint="#616465"
-                            android:background="@null"
-                            android:textSize="17dp"/>
-                    </LinearLayout>
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <LinearLayout
+                                android:focusable="true"
+                                android:focusableInTouchMode="true"
+                                android:clickable="true"
+                                android:layout_width="0px"
+                                android:layout_height="0px" />
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="fill_parent"
+                                android:padding="16dp"
+                                android:maxLength="64"
+                                android:id="@+id/et_password"
+                                android:textColor="#313435"
+                                android:textColorHint="#616465"
+                                android:background="@null"
+                                android:textSize="17dp"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
                 </androidx.cardview.widget.CardView>
                 <View
                     android:layout_width="match_parent"

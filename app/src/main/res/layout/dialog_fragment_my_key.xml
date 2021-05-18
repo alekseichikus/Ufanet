@@ -16,8 +16,8 @@
             android:paddingLeft="24dp"
             android:paddingRight="16dp"
             android:textSize="17sp"
-            android:fontFamily="@font/roboto_medium"
-            android:textColor="#616465"
+            android:fontFamily="@font/roboto_regular"
+            android:textColor="#a1a4a5"
             android:text="Мой ключ"/>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

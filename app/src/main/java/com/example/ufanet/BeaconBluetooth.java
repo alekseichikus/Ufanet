@@ -10,7 +10,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.example.ufanet.home.AuthBottomDialogFragment;
+import com.example.ufanet.home.AuthActivity;
 import com.example.ufanet.home.homeFragments;
 import com.example.ufanet.utils.MemoryOperation;
 
@@ -34,15 +34,15 @@ public class BeaconBluetooth {
     byte[] payload = {(byte) 0x55,
             (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x43, (byte) 0x02};
 
-    AuthBottomDialogFragment fragment;
+    AuthActivity fragment;
 
-    public BeaconBluetooth(AuthBottomDialogFragment fragment){
+    public BeaconBluetooth(AuthActivity fragment){
         bluetoothHandler = new Handler();
         this.fragment = fragment;
-        bluetoothManager = (BluetoothManager) fragment.getContext().getSystemService(Context.BLUETOOTH_SERVICE);
+        bluetoothManager = (BluetoothManager) fragment.getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
-        memoryOperation = new MemoryOperation(fragment.getContext());
+        memoryOperation = new MemoryOperation(fragment);
 
         bluetoothRunnable = new Runnable() {
             public void run() {
@@ -67,7 +67,7 @@ public class BeaconBluetooth {
         settingsBuilder.setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
         settingsBuilder.setConnectable(false);
 
-        bluetoothManager = (BluetoothManager) fragment.getContext().getSystemService(Context.BLUETOOTH_SERVICE);
+        bluetoothManager = (BluetoothManager) fragment.getSystemService(Context.BLUETOOTH_SERVICE);
 
         bluetoothAdapter = bluetoothManager.getAdapter();
         bluetoothAdapter.setName("UKEY");

@@ -30,6 +30,8 @@ import com.example.ufanet.passwordActivity.LogPasscodeActivity;
 import com.example.ufanet.utils.MemoryOperation;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import static com.example.ufanet.home.AuthActivity.isBluetoothEnabled;
+
 
 public class homeFragments extends BottomSheetDialogFragment {
 
@@ -39,7 +41,6 @@ public class homeFragments extends BottomSheetDialogFragment {
     Runnable runnableBluetooth;
     LinearLayout addButtonContainerLayout;
     CardView circleLinearLayout;
-    CardView shareCardView;
     ImageView circleImageView;
     CardView openButton;
     CardView settingButton;
@@ -73,6 +74,8 @@ public class homeFragments extends BottomSheetDialogFragment {
 
         byte[] tokenByteArray = hexStringToByteArray(memoryOperation.getTokenUser());
 
+        Log.d("my token", memoryOperation.getTokenUser());
+
         for (int i = 1; i <= 8; i++) {
             tokenBeacon[i] = tokenByteArray[i-1];
         }
@@ -101,12 +104,14 @@ public class homeFragments extends BottomSheetDialogFragment {
         addButtonContainerLayout = view.findViewById(R.id.add_button_container);
         circleLinearLayout = view.findViewById(R.id.circle_container);
         circleImageView = view.findViewById(R.id.circle_imageview);
-        shareCardView = view.findViewById(R.id.share_button);
         openButton = view.findViewById(R.id.add_button);
         settingButton = view.findViewById(R.id.cv_setting_button);
 
         dataBuilder = new AdvertiseData.Builder();
         Log.d("button_key", new String(tokenBeacon));
+        for (int i = 0; i < tokenBeacon.length; i++) {
+            Log.d("aleks", String.valueOf(tokenBeacon[i]));
+        }
         dataBuilder.addManufacturerData(0xFFFF, tokenBeacon);
         dataBuilder.setIncludeDeviceName(true);
         settingsBuilder = new AdvertiseSettings.Builder();
@@ -140,21 +145,11 @@ public class homeFragments extends BottomSheetDialogFragment {
     }
 
     private void setListeners(){
-        shareCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myKeyDialogFragment fragment =
-                        new myKeyDialogFragment();
-                fragment.show(getFragmentManager(),
-                        "auth_fragment");
-                //shareText();
-            }
-        });
 
         openButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(AuthBottomDialogFragment.isBluetoothEnabled()){
+                if(isBluetoothEnabled()){
                     advertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
                     advertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
                     handlerBluetooth.postDelayed(runnableBluetooth, BEACON_BLUETOOTH_DELAY);
@@ -185,25 +180,6 @@ public class homeFragments extends BottomSheetDialogFragment {
                 fragment.show(getFragmentManager(),
                         "auth_fragment");
                 //shareText();
-            }
-        });
-
-        shareCardView.setOnClickListener(new View.OnClickListener(){
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), PermActivity.class);
-                intent.putExtra("title", "Bluetooth");
-                intent.putExtra("id_image", R.drawable.ic_bluetooth_b);
-                intent.putExtra("id", 0);
-                intent.putExtra("post_title", "Bluetooth нам нужен для поиска устройства" +
-                        " и для активации функции администрирования");
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-//                GeoLocalRequestToPermissionDialogFragment addPhotoBottomDialogFragment =
-//                        new GeoLocalRequestToPermissionDialogFragment();
-//                addPhotoBottomDialogFragment.show(getFragmentManager(),
-//                        "auth_fragment");
             }
         });
     }

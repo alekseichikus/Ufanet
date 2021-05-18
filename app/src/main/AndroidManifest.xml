@@ -49,8 +49,7 @@
             />
 
         <activity android:label="@string/app_name" android:name=".home.AuthActivity"
-            android:theme="@style/AppTheme.NoActionBar2"
-            />
+            android:theme="@style/AppTheme.NoActionBar2"/>
 
         <activity android:label="@string/app_name" android:name=".passwordActivity.LogPasscodeActivity"
             android:theme="@style/AppTheme2.NoActionBar"
